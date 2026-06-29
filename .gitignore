@@ -1,0 +1,86 @@
+# ==========================================
+# Byte-compiled / optimized / DLL files
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================================
+# Virtual Environments
+# ==========================================
+.venv/
+venv/
+ENV/
+env/
+ENV/
+virtualenv/
+
+# ==========================================
+# Environment Variables & Secrets (CRITICAL)
+# ==========================================
+.env
+.env.local
+.env.*
+*.env
+secrets.toml
+
+# ==========================================
+# Distribution / Packaging / Build Artifacts
+# ==========================================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==========================================
+# Unit Test, Coverage, and Linters
+# ==========================================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# ==========================================
+# Database & Log Files (Django/Flask specifics)
+# ==========================================
+*.log
+db.sqlite3
+db.sqlite3-journal
+instance/
+
+# ==========================================
+# OS and Common IDE Settings (Optional)
+# ==========================================
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# PyCharm / JetBrains
+.idea/

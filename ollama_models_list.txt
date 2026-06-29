@@ -1,0 +1,31 @@
+NAME                         ID              SIZE      MODIFIED      
+gemma4:e2b                   7fbdbf8f5e45    7.2 GB    2 months ago     
+food-model:latest            580cf4ce3eb5    6.2 GB    2 months ago     
+food-ai:latest               b3ab929623fe    6.2 GB    2 months ago     
+food-order-ai:latest         1383c1c66c33    300 MB    2 months ago     
+functiongemma:latest         7c19b650567a    300 MB    2 months ago     
+llama3.2:latest              a80c4f17acd5    2.0 GB    2 months ago     
+llama3.2:3b                  a80c4f17acd5    2.0 GB    2 months ago     
+llama3.2:1b                  baf6a787fdff    1.3 GB    3 months ago     
+smollm:latest                95f6557a0f0f    990 MB    3 months ago     
+glm-5:cloud                  c313cd065935    -         4 months ago     
+minimax-m2.5:cloud           c0d5751c800f    -         4 months ago     
+qwen3:4b                     359d7dd4bcda    2.5 GB    4 months ago     
+gemma3:1b                    8648f39daa8f    815 MB    4 months ago     
+lfm2.5-thinking:latest       95bd9d45385f    731 MB    4 months ago     
+olmo2:latest                 4208d3b406db    4.5 GB    5 months ago     
+x/flux2-klein:latest         8c7f37810489    5.7 GB    5 months ago     
+x/z-image-turbo:latest       1053737ea587    12 GB     5 months ago     
+moondream:latest             55fc3abd3867    1.7 GB    5 months ago     
+nemotron-3-nano:30b-cloud    01d0d069a149    -         5 months ago     
+minimax-m2:cloud             698ab6d56142    -         5 months ago     
+glm-4.6:cloud                05277b76269f    -         5 months ago     
+qwen3-coder:480b-cloud       e30e45586389    -         6 months ago     
+deepseek-v3.1:671b-cloud     d3749919e45f    -         7 months ago     
+gpt-oss:120b-cloud           569662207105    -         9 months ago     
+mxbai-embed-large:latest     468836162de7    669 MB    14 months ago    
+llava:latest                 8dd30f6b0cb1    4.7 GB    14 months ago    
+phi4:latest                  ac896e5b8b34    9.1 GB    14 months ago    
+mistral:latest               f974a74358d6    4.1 GB    14 months ago    
+deepseek-r1:14b              ea35dfe18182    9.0 GB    17 months ago    
+deepseek-r1:8b               28f8fd6cdc67    4.9 GB    17 months ago    
