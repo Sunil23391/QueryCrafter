@@ -244,6 +244,58 @@ async function previewApiConfig(id) {
     `;
 }
 
+async function previewSqlWithApi(sql, configId = null, targetContainer = null) {
+    if (!sql) return;
+
+    const availableConfigs = (typeof window !== "undefined" && window.apiConfigs)
+        || (typeof globalThis !== "undefined" && globalThis.apiConfigs)
+        || apiConfigs;
+    const config = availableConfigs.find(item => item.id === configId) || (!configId ? availableConfigs[0] : null);
+    if (!config) {
+        document.getElementById("apiImportStatus").innerHTML = "⚠️ Create an API configuration first.";
+        document.getElementById("apiImportStatus").className = "status error";
+        return;
+    }
+
+    const previewBox = document.getElementById("apiPreview");
+    previewBox.classList.remove("hidden");
+    previewBox.innerHTML = "Loading preview...";
+
+    try {
+        const response = await fetch(`/api-configs/${config.id}/preview`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: sql })
+        });
+        const data = await response.json();
+
+        const previewHtml = `
+            <h4>Preview</h4>
+            <div>Format: ${escapeHtml(data.format || "unknown")}</div>
+            <pre>${escapeHtml(JSON.stringify(data.preview, null, 2))}</pre>
+        `;
+
+        if (targetContainer) {
+            targetContainer.innerHTML = previewHtml;
+            targetContainer.className = "preview-result";
+        }
+
+        if (!data.success) {
+            previewBox.innerHTML = `<div class="error">${escapeHtml(data.error || "Preview failed")}</div>`;
+            return;
+        }
+
+        previewBox.innerHTML = previewHtml;
+    } catch (err) {
+        const errorHtml = `<div class="error">${escapeHtml(err.message || "Preview failed")}</div>`;
+        if (targetContainer) {
+            targetContainer.innerHTML = errorHtml;
+            targetContainer.className = "preview-result";
+        }
+        previewBox.innerHTML = errorHtml;
+    }
+}
+
 async function importApiConfig(id) {
     const query = prompt("Enter a SQL-like query to import data", "SELECT *");
     if (!query) return;
@@ -406,20 +458,50 @@ function appendUser(message) {
 function appendAssistant(sql, reasoning, attempts) {
     const div = document.createElement("div");
     div.className = "message assistant";
-    div.innerHTML = `
-        <div>
-            <strong>Generated SQL</strong>
-            <div class="sql">
-${escapeHtml(sql)}
-            </div>
-            <div class="reasoning">
-💡 ${escapeHtml(reasoning)}
-            </div>
-            <div style="font-size:12px;color:#999;margin-top:8px;">
-Attempts: ${attempts}
-            </div>
-        </div>
-    `;
+
+    const content = document.createElement("div");
+
+    const title = document.createElement("strong");
+    title.textContent = "Generated SQL";
+
+    const sqlBox = document.createElement("div");
+    sqlBox.className = "sql";
+    sqlBox.textContent = sql;
+
+    const previewContainer = document.createElement("div");
+    previewContainer.className = "preview-result";
+    previewContainer.innerHTML = "";
+
+    const actionRow = document.createElement("div");
+    actionRow.style.marginTop = "8px";
+
+    const previewButton = document.createElement("button");
+    previewButton.type = "button";
+    previewButton.textContent = "Generated SQL";
+    previewButton.addEventListener("click", async () => {
+        previewContainer.innerHTML = "Loading preview...";
+        await previewSqlWithApi(sql, null, previewContainer);
+    });
+
+    actionRow.appendChild(previewButton);
+
+    const reasoningBox = document.createElement("div");
+    reasoningBox.className = "reasoning";
+    reasoningBox.textContent = `💡 ${reasoning}`;
+
+    const attemptsBox = document.createElement("div");
+    attemptsBox.style.fontSize = "12px";
+    attemptsBox.style.color = "#999";
+    attemptsBox.style.marginTop = "8px";
+    attemptsBox.textContent = `Attempts: ${attempts}`;
+
+    content.appendChild(title);
+    content.appendChild(sqlBox);
+    content.appendChild(previewContainer);
+    content.appendChild(actionRow);
+    content.appendChild(reasoningBox);
+    content.appendChild(attemptsBox);
+    div.appendChild(content);
 
     document.getElementById("chatBox").appendChild(div);
     scrollBottom();
@@ -510,6 +592,8 @@ if (typeof module !== "undefined" && module.exports) {
         showApiConfigForm,
         cancelApiConfigForm,
         getApiFormData,
-        getAuthData
+        getAuthData,
+        previewSqlWithApi,
+        appendAssistant
     };
 }

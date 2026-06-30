@@ -1,0 +1,1348 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+assets/
+  hero.png
+  react.svg
+  vite.svg
+components/
+  ApiConfigForm.jsx
+  ApiConfigList.jsx
+  ChatPanel.jsx
+  DataRenderer.jsx
+App.css
+App.jsx
+index.css
+main.jsx
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="assets/react.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+</file>
+
+<file path="assets/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="77" height="47" fill="none" aria-labelledby="vite-logo-title" viewBox="0 0 77 47"><title id="vite-logo-title">Vite</title><style>.parenthesis{fill:#000}@media (prefers-color-scheme:dark){.parenthesis{fill:#fff}}</style><path fill="#9135ff" d="M40.151 45.71c-.663.844-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.493c-.92 0-1.457-1.04-.92-1.788l7.479-10.471c1.07-1.498 0-3.578-1.842-3.578H15.443c-.92 0-1.456-1.04-.92-1.788l9.696-13.576c.213-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.472c-1.07 1.497 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.087.89 1.83L40.153 45.712z"/><mask id="a" width="48" height="47" x="14" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M40.047 45.71c-.663.843-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.389c-.92 0-1.457-1.04-.92-1.788l7.479-10.472c1.07-1.497 0-3.578-1.842-3.578H15.34c-.92 0-1.456-1.04-.92-1.788l9.696-13.575c.213-.297.556-.474.92-.474H53.93c.92 0 1.456 1.04.92 1.788L47.37 13.03c-1.07 1.498 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.088.89 1.831L40.049 45.712z"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#eee6ff" rx="5.508" ry="14.704" transform="rotate(269.814 20.96 11.29)scale(-1 1)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#eee6ff" rx="10.399" ry="29.851" transform="rotate(89.814 -16.902 -8.275)scale(1 -1)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#8900ff" rx="5.508" ry="30.487" transform="rotate(89.814 -19.197 -7.127)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.928 4.177)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.738 5.52)scale(1 -1)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#eee6ff" rx="14.072" ry="22.078" transform="rotate(93.35 31.245 55.578)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx="14.592" cy="9.743" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(39.51 14.592 9.743)"/></g><g filter="url(#k)"><ellipse cx="61.728" cy="-5.321" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 61.728 -5.32)"/></g><g filter="url(#l)"><ellipse cx="55.618" cy="7.104" fill="#00c2ff" rx="5.971" ry="9.665" transform="rotate(37.892 55.618 7.104)"/></g><g filter="url(#m)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#n)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#o)"><ellipse cx="49.857" cy="30.678" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 49.857 30.678)"/></g><g filter="url(#p)"><ellipse cx="52.623" cy="33.171" fill="#00c2ff" rx="5.971" ry="15.297" transform="rotate(37.892 52.623 33.17)"/></g></g><path d="M6.919 0c-9.198 13.166-9.252 33.575 0 46.789h6.215c-9.25-13.214-9.196-33.623 0-46.789zm62.424 0h-6.215c9.198 13.166 9.252 33.575 0 46.789h6.215c9.25-13.214 9.196-33.623 0-46.789" class="parenthesis"/><defs><filter id="b" width="60.045" height="41.654" x="-5.564" y="16.92" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-40.407" y="-6.762" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-35.435" y="2.801" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-30.84" y="20.8" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-29.307" y="21.949" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="29.961" y="-17.13" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-13.43" y="-22.082" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="34.321" y="-37.644" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="38.847" y="-10.552" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="22.45" y="-1.645" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="32.919" y="11.36" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter></defs></svg>
+</file>
+
+<file path="components/ApiConfigForm.jsx">
+import React from 'react';
+
+export default function ApiConfigForm({
+  formFields,
+  handleFormChange,
+  saveApiConfig,
+  validateApiConfig,
+  cancelApiConfigForm,
+  showApiForm,
+}) {
+  if (!showApiForm) return null;
+
+  return (
+    <div id="apiConfigForm" className="api-form">
+      <label>API Name</label>
+      <input id="name" type="text" placeholder="Example API" value={formFields.name} onChange={handleFormChange} />
+
+      <label>Endpoint URL</label>
+      <input id="endpoint" type="text" placeholder="https://api.example.com/data" value={formFields.endpoint} onChange={handleFormChange} />
+
+      <label>HTTP Method</label>
+      <select id="method" value={formFields.method} onChange={handleFormChange}>
+        <option value="GET">GET</option>
+        <option value="POST">POST</option>
+      </select>
+
+      <div id="headersSection" className={formFields.authRequired ? '' : 'hidden'}>
+        <label>Headers (one per line: Key: Value)</label>
+        <textarea id="headers" placeholder="Authorization: Bearer TOKEN" value={formFields.headers} onChange={handleFormChange} />
+      </div>
+
+      <label className="checkbox-row">
+        <input id="authRequired" type="checkbox" checked={formFields.authRequired} onChange={handleFormChange} />
+        <span>Authentication Required</span>
+      </label>
+
+      {formFields.authRequired && (
+        <div id="authSection" className="auth-section">
+          <label>Authentication Type</label>
+          <select id="authType" value={formFields.authType} onChange={handleFormChange}>
+            <option value="none">None</option>
+            <option value="bearer">Bearer Token</option>
+            <option value="api_key">API Key</option>
+            <option value="basic">Basic Auth</option>
+          </select>
+
+          {formFields.authType === 'bearer' && (
+            <>
+              <label>Bearer Token</label>
+              <input id="authToken" type="text" placeholder="Token" value={formFields.authToken} onChange={handleFormChange} />
+            </>
+          )}
+          {formFields.authType === 'api_key' && (
+            <>
+              <label>Header Name</label>
+              <input id="authKeyName" type="text" placeholder="X-API-Key" value={formFields.authKeyName} onChange={handleFormChange} />
+              <label>Header Value</label>
+              <input id="authKeyValue" type="text" placeholder="API Key" value={formFields.authKeyValue} onChange={handleFormChange} />
+            </>
+          )}
+          {formFields.authType === 'basic' && (
+            <>
+              <label>Username</label>
+              <input id="authUsername" type="text" placeholder="username" value={formFields.authUsername} onChange={handleFormChange} />
+              <label>Password</label>
+              <input id="authPassword" type="password" placeholder="password" value={formFields.authPassword} onChange={handleFormChange} />
+            </>
+          )}
+        </div>
+      )}
+
+      <label>Request Body Template</label>
+      <textarea id="bodyTemplate" placeholder='{"query":"{{query}}"}' value={formFields.bodyTemplate} onChange={handleFormChange} />
+
+      <label>Response Format</label>
+      <select id="responseFormat" value={formFields.responseFormat} onChange={handleFormChange}>
+        <option value="auto">Auto Detect</option>
+        <option value="json">JSON</option>
+        <option value="csv">CSV</option>
+      </select>
+
+      <div className="controls">
+        <button type="button" onClick={saveApiConfig}>Save Config</button>
+        <button type="button" onClick={validateApiConfig}>Validate</button>
+        <button type="button" onClick={cancelApiConfigForm}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="components/ApiConfigList.jsx">
+import React from 'react';
+
+export default function ApiConfigList({ apiConfigs, editApiConfig, previewApiConfig, deleteApiConfig }) {
+  return (
+    <div id="apiConfigList" className="api-list">
+      {apiConfigs.length === 0 ? (
+        <p>No API configurations yet.</p>
+      ) : (
+        apiConfigs.map((config) => (
+          <div className="api-item" key={config.id}>
+            <strong>{config.name}</strong>
+            <div>{config.endpoint}</div>
+            <div>{config.method}</div>
+            <div className="controls">
+              <button type="button" onClick={() => editApiConfig(config)}>Edit</button>
+              <button type="button" onClick={() => previewApiConfig(config.id)}>Preview</button>
+              <button type="button" onClick={() => deleteApiConfig(config.id)}>Delete</button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+</file>
+
+<file path="components/ChatPanel.jsx">
+import React from 'react';
+import DataRenderer from './DataRenderer';
+
+export default function ChatPanel({
+  chatMessages,
+  isChatLoading,
+  question,
+  setQuestion,
+  handleKeyPress,
+  sendQuestion,
+  previewSqlWithApi,
+  setInlineViewMode,
+}) {
+  return (
+    <div className="right-panel">
+      <div id="chatCard" className="card">
+        <h2 style={{ marginBottom: '15px' }}>Conversation</h2>
+        <div id="chatBox" className="chat-box">
+          {chatMessages.map((msg, idx) => (
+            <div className={`message ${msg.type}`} key={idx}>
+              {msg.type === 'user' ? (
+                <div className="bubble">{msg.content}</div>
+              ) : (
+                <div>
+                  <strong>Generated SQL</strong>
+                  <div className="sql">{msg.sql}</div>
+                  {(msg.previewLoading || msg.previewError || msg.previewData) && (
+                    <div className="preview-result" style={{ marginTop: '12px', background: '#f9fafb', padding: '10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
+                    >
+                      {msg.previewLoading && <div>Loading preview...</div>}
+                      {msg.previewError && <div className="error">{msg.previewError}</div>}
+                      {msg.previewData && (
+                        <>
+                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
+                            <h4 style={{ margin: 0 }}>Preview Result</h4>
+                            <div style={{ marginLeft: 'auto' }}>
+                              <button type="button" onClick={() => setInlineViewMode(idx, 'table')} style={{ marginRight: '4px', padding: '2px 6px', fontSize: '11px' }}>Table</button>
+                              <button type="button" onClick={() => setInlineViewMode(idx, 'json')} style={{ padding: '2px 6px', fontSize: '11px' }}>JSON</button>
+                            </div>
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#777' }}>Format: {msg.previewFormat}</div>
+                          <DataRenderer data={msg.previewData} viewMode={msg.viewMode || 'table'} />
+                        </>
+                      )}
+                    </div>
+                  )}
+                  <div style={{ marginTop: '8px' }}>
+                    <button type="button" onClick={() => previewSqlWithApi(msg.sql, idx)}>Execute Query & Preview</button>
+                  </div>
+                  <div className="reasoning">💡 {msg.reasoning}</div>
+                  <div style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>Attempts: {msg.attempts}</div>
+                </div>
+              )}
+            </div>
+          ))}
+          {isChatLoading && <div className="loading">Thinking...</div>}
+        </div>
+        <div style={{ marginTop: '20px' }}>
+          <textarea
+            id="question"
+            placeholder="Ask your SQL question..."
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
+          <div className="controls">
+            <button id="sendBtn" onClick={sendQuestion} disabled={isChatLoading}>Send</button>
+            <button onClick={() => { /* resetConversation placeholder */ }}>Reset Conversation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="components/DataRenderer.jsx">
+import React from 'react';
+
+export default function DataRenderer({ data, viewMode }) {
+  if (!data) return null;
+
+  // Determine array of rows
+  let dataArray = null;
+  if (data.preview && Array.isArray(data.preview) && data.preview[0]?.rows) {
+    dataArray = data.preview[0].rows;
+  } else if (data.rows && Array.isArray(data.rows) && data.rows[0]?.rows) {
+    dataArray = data.rows[0].rows;
+  } else if (Array.isArray(data)) {
+    dataArray = data;
+  }
+
+  if (viewMode === 'table' && dataArray && dataArray.length > 0) {
+    const sampleRow = dataArray[0];
+    const headers = typeof sampleRow === 'object' && sampleRow !== null ? Object.keys(sampleRow) : ['Value'];
+    return (
+      <div className="table-wrapper" style={{ overflowX: 'auto', marginTop: '10px', maxWidth: '100%', border: '1px solid #e5e7eb', borderRadius: '4px' }}>
+        <table className="preview-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+          <thead>
+            <tr>{headers.map((key) => (
+              <th key={key} style={{ padding: '8px 12px', fontWeight: '600', color: '#374151' }}>{key}</th>
+            ))}</tr>
+          </thead>
+          <tbody>
+            {dataArray.map((row, rIdx) => {
+              const isObj = typeof row === 'object' && row !== null;
+              return (
+                <tr key={rIdx} style={{ borderBottom: '1px solid #e5e7eb', backgroundColor: rIdx % 2 === 0 ? '#ffffff' : '#f9fafb' }}>
+                  {headers.map((col) => {
+                    const value = isObj ? row[col] : row;
+                    return (
+                      <td key={col} style={{ padding: '8px 12px', color: '#4b5563' }}>{typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value ?? '')}</td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  // Default JSON view
+  return <pre style={{ marginTop: '10px', background: '#f4f4f5', padding: '10px', borderRadius: '4px', overflowX: 'auto' }}>{JSON.stringify(data, null, 2)}</pre>;
+}
+</file>
+
+<file path="App.css">
+.counter {
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  margin-bottom: 24px;
+
+  &:hover {
+    border-color: var(--accent-border);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.hero {
+  position: relative;
+
+  .base,
+  .framework,
+  .vite {
+    inset-inline: 0;
+    margin: 0 auto;
+  }
+
+  .base {
+    width: 170px;
+    position: relative;
+    z-index: 0;
+  }
+
+  .framework,
+  .vite {
+    position: absolute;
+  }
+
+  .framework {
+    z-index: 1;
+    top: 34px;
+    height: 28px;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
+      scale(1.4);
+  }
+
+  .vite {
+    z-index: 0;
+    top: 107px;
+    height: 26px;
+    width: auto;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
+      scale(0.8);
+  }
+}
+
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  place-content: center;
+  place-items: center;
+  flex-grow: 1;
+
+  @media (max-width: 1024px) {
+    padding: 32px 20px 24px;
+    gap: 18px;
+  }
+}
+
+#next-steps {
+  display: flex;
+  border-top: 1px solid var(--border);
+  text-align: left;
+
+  & > div {
+    flex: 1 1 0;
+    padding: 32px;
+    @media (max-width: 1024px) {
+      padding: 24px 20px;
+    }
+  }
+
+  .icon {
+    margin-bottom: 16px;
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+#docs {
+  border-right: 1px solid var(--border);
+
+  @media (max-width: 1024px) {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+#next-steps ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+  margin: 32px 0 0;
+
+  .logo {
+    height: 18px;
+  }
+
+  a {
+    color: var(--text-h);
+    font-size: 16px;
+    border-radius: 6px;
+    background: var(--social-bg);
+    display: flex;
+    padding: 6px 12px;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.3s;
+
+    &:hover {
+      box-shadow: var(--shadow);
+    }
+    .button-icon {
+      height: 18px;
+      width: 18px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    li {
+      flex: 1 1 calc(50% - 8px);
+    }
+
+    a {
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+  }
+}
+
+#spacer {
+  height: 88px;
+  border-top: 1px solid var(--border);
+  @media (max-width: 1024px) {
+    height: 48px;
+  }
+}
+
+.ticks {
+  position: relative;
+  width: 100%;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -4.5px;
+    border: 5px solid transparent;
+  }
+
+  &::before {
+    left: 0;
+    border-left-color: var(--border);
+  }
+  &::after {
+    right: 0;
+    border-right-color: var(--border);
+  }
+}
+</file>
+
+<file path="App.jsx">
+import React, { useState, useEffect, useRef } from 'react';
+import './index.css';
+import ApiConfigForm from './components/ApiConfigForm';
+import ApiConfigList from './components/ApiConfigList';
+import ChatPanel from './components/ChatPanel';
+// InlinePreview is used within ChatPanel component
+// DataRenderer is used within child components
+
+export default function QueryCrafter() {
+  // Session States
+  const [sessionId, setSessionId] = useState(null);
+  const [schema, setSchema] = useState('');
+  const [domain, setDomain] = useState('General');
+  const [isSchemaLoading, setIsSchemaLoading] = useState(false);
+  const [schemaStatus, setSchemaStatus] = useState({ text: 'No schema loaded.', className: 'status' });
+
+  // API Config Panel States
+  const [apiConfigs, setApiConfigs] = useState([]);
+  const [showApiForm, setShowApiForm] = useState(false);
+  const [activeApiConfigId, setActiveApiConfigId] = useState(null);
+  const [apiImportStatus, setApiImportStatus] = useState({ text: '', className: 'status' });
+
+  // Standalone API Global Preview Overlay State
+  const [apiPreview, setApiPreview] = useState({ visible: false, format: '', data: null, error: '', viewMode: 'table' });
+
+  // API Form Fields State
+  const [formFields, setFormFields] = useState({
+    name: '',
+    endpoint: '',
+    method: 'GET',
+    headers: '',
+    bodyTemplate: '{"query":"{{query}}"}',
+        {/* API Config Component */}
+        <div className="card">
+          <h3>API Connection Configurations</h3>
+          <div className="controls" style={{ marginTop: '10px' }}>
+            <button type="button" onClick={showApiConfigForm}>New API Config</button>
+          </div>
+          <ApiConfigForm
+            formFields={formFields}
+            handleFormChange={handleFormChange}
+            saveApiConfig={saveApiConfig}
+            validateApiConfig={validateApiConfig}
+            cancelApiConfigForm={cancelApiConfigForm}
+            showApiForm={showApiForm}
+          />
+          <ApiConfigList
+            apiConfigs={apiConfigs}
+            editApiConfig={editApiConfig}
+            previewApiConfig={previewApiConfig}
+            deleteApiConfig={deleteApiConfig}
+          />
+          {apiPreview.visible && (
+            <div id="apiPreview" className="preview-panel">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <h4 style={{ margin: 0 }}>Preview</h4>
+                <div className="toggle-view-buttons" style={{ marginLeft: 'auto' }}>
+                  <button type="button" className={apiPreview.viewMode === 'table' ? 'active' : ''} onClick={() => setApiPreview(prev => ({ ...prev, viewMode: 'table' }))} style={{ marginRight: '4px', padding: '2px 8px', fontSize: '12px' }}>Table</button>
+                  <button type="button" className={apiPreview.viewMode === 'json' ? 'active' : ''} onClick={() => setApiPreview(prev => ({ ...prev, viewMode: 'json' }))} style={{ padding: '2px 8px', fontSize: '12px' }}>JSON</button>
+                </div>
+              </div>
+              {apiPreview.error && <div className={apiPreview.error.includes('Loading') ? '' : 'error'}>{apiPreview.error}</div>}
+              {apiPreview.data && (
+                <>
+                  <div style={{ fontSize: '12px', color: '#666' }}>Format: {apiPreview.format}</div>
+                  <DataRenderer data={apiPreview.data} viewMode={apiPreview.viewMode} />
+                </>
+              )}
+            </div>
+          )}
+          {apiImportStatus.text && (
+            <div id="apiImportStatus" className={apiImportStatus.className}>{apiImportStatus.text}</div>
+          )}
+        </div>
+      body_template: formFields.bodyTemplate.trim(),
+      response_format: formFields.responseFormat,
+          {/* API Config Component */}
+          <div className="card">
+            <h3>API Connection Configurations</h3>
+            <div className="controls" style={{ marginTop: '10px' }}>
+              <button type="button" onClick={showApiConfigForm}>New API Config</button>
+            </div>
+            <ApiConfigForm
+              formFields={formFields}
+              handleFormChange={handleFormChange}
+              saveApiConfig={saveApiConfig}
+              validateApiConfig={validateApiConfig}
+              cancelApiConfigForm={cancelApiConfigForm}
+              showApiForm={showApiForm}
+            />
+            <ApiConfigList
+              apiConfigs={apiConfigs}
+              editApiConfig={editApiConfig}
+              previewApiConfig={previewApiConfig}
+              deleteApiConfig={deleteApiConfig}
+            />
+            {apiPreview.visible && (
+              <div id="apiPreview" className="preview-panel">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h4 style={{ margin: 0 }}>Preview</h4>
+                  <div className="toggle-view-buttons" style={{ marginLeft: 'auto' }}>
+                    <button type="button" className={apiPreview.viewMode === 'table' ? 'active' : ''} onClick={() => setApiPreview(prev => ({ ...prev, viewMode: 'table' }))} style={{ marginRight: '4px', padding: '2px 8px', fontSize: '12px' }}>Table</button>
+                    <button type="button" className={apiPreview.viewMode === 'json' ? 'active' : ''} onClick={() => setApiPreview(prev => ({ ...prev, viewMode: 'json' }))} style={{ padding: '2px 8px', fontSize: '12px' }}>JSON</button>
+                  </div>
+                </div>
+                {apiPreview.error && <div className={apiPreview.error.includes('Loading') ? '' : 'error'}>{apiPreview.error}</div>}
+                {apiPreview.data && (
+                  <>
+                    <div style={{ fontSize: '12px', color: '#666' }}>Format: {apiPreview.format}</div>
+                    <DataRenderer data={apiPreview.data} viewMode={apiPreview.viewMode} />
+                  </>
+                )}
+              </div>
+            )}
+            {apiImportStatus.text && (
+              <div id="apiImportStatus" className={apiImportStatus.className}>{apiImportStatus.text}</div>
+            )}
+          </div>
+      });
+      const data = await response.json();
+
+      setChatMessages((prev) =>
+        prev.map((msg, idx) => {
+          if (idx === index) {
+            if (!data.success) {
+              return { ...msg, previewLoading: false, previewError: data.error || 'Preview failed' };
+            }
+            return {
+              ...msg,
+              previewLoading: false,
+              previewFormat: data.format || 'unknown',
+              previewData: data,
+              viewMode: 'table'
+            };
+          }
+          return msg;
+        })
+      );
+    } catch (err) {
+      setChatMessages((prev) =>
+        prev.map((msg, idx) => (idx === index ? { ...msg, previewLoading: false, previewError: err.message } : msg))
+      );
+    }
+  };
+
+  const setInlineViewMode = (index, mode) => {
+    setChatMessages((prev) =>
+      prev.map((msg, idx) => (idx === index ? { ...msg, viewMode: mode } : msg))
+    );
+  };
+
+  // ------------------------------------------------------------
+  // Dynamic Data Renderer Component (Handles response parsing)
+  // ------------------------------------------------------------
+  const DataRenderer = ({ data, viewMode }) => {
+    if (!data) return null;
+
+    // Safely extract the data records based on your exact response schema
+    let dataArray = null;
+    if (data.preview && Array.isArray(data.preview) && data.preview[0]?.rows) {
+      dataArray = data.preview[0].rows;
+    } else if (data.rows && Array.isArray(data.rows) && data.rows[0]?.rows) {
+      dataArray = data.rows[0].rows;
+    } else if (Array.isArray(data)) {
+      dataArray = data;
+    }
+
+    // Render as HTML table if viewMode is "table" and we found valid dataset row structures
+    if (viewMode === 'table' && dataArray && dataArray.length > 0) {
+      const sampleRow = dataArray[0];
+      const headers = typeof sampleRow === 'object' && sampleRow !== null ? Object.keys(sampleRow) : ['Value'];
+
+      return (
+        <div className="table-wrapper" style={{ overflowX: 'auto', marginTop: '10px', maxWidth: '100%', border: '1px solid #e5e7eb', borderRadius: '4px' }}>
+          <table className="preview-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#f3f4f6', borderBottom: '2px solid #e5e7eb' }}>
+                {headers.map((key) => (
+                  <th key={key} style={{ padding: '8px 12px', fontWeight: '6px', color: '#374151' }}>{key}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {dataArray.map((row, rIdx) => {
+                const isObj = typeof row === 'object' && row !== null;
+                return (
+                  <tr key={rIdx} style={{ borderBottom: '1px solid #e5e7eb', backgroundColor: rIdx % 2 === 0 ? '#ffffff' : '#f9fafb' }}>
+                    {headers.map((col) => {
+                      const value = isObj ? row[col] : row;
+                      return (
+                        <td key={col} style={{ padding: '8px 12px', color: '#4b5563' }}>
+                          {typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value ?? '')}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    // Default JSON fallback display
+    return <pre style={{ marginTop: '10px', background: '#f4f4f5', padding: '10px', borderRadius: '4px', overflowX: 'auto' }}>{JSON.stringify(data, null, 2)}</pre>;
+  };
+
+  // ------------------------------------------------------------
+  // Chat Conversation Mechanics
+  // ------------------------------------------------------------
+  const sendQuestion = async () => {
+    if (sessionId === null) {
+      alert('Load schema first.');
+      return;
+    }
+    if (!question.trim()) return;
+
+    const currentQuestion = question.trim();
+    setChatMessages((prev) => [...prev, { type: 'user', content: currentQuestion }]);
+    setQuestion('');
+    setIsChatLoading(true);
+
+    try {
+      const response = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sessionId, question: currentQuestion })
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            type: 'assistant',
+            sql: data.assistant.sql_query,
+            reasoning: data.assistant.reasoning,
+            attempts: data.attempts_used
+          }
+        ]);
+      } else {
+        setChatMessages((prev) => [
+          ...prev,
+          { type: 'assistant', sql: 'ERROR', reasoning: data.error, attempts: 0 }
+        ]);
+      }
+    } catch (err) {
+      setChatMessages((prev) => [
+        ...prev,
+        { type: 'assistant', sql: 'Network Error', reasoning: err.message, attempts: 0 }
+      ]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendQuestion();
+    }
+  };
+
+  const resetConversation = async () => {
+    if (sessionId === null) return;
+    try {
+      await fetch(`/reset/${sessionId}`, { method: 'POST' });
+      setChatMessages([]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1>🛠 QueryCrafter</h1>
+      <div className="subtitle">Conversational SQL Assistant powered by Ollama</div>
+
+      <div id="mainLayout" className={`layout ${sessionId ? 'session-active' : ''}`}>
+        {/* Left Control Panel */}
+        <div className="left-panel">
+          <div className="card">
+            <label>Database Schema (DDL)</label>
+            <textarea
+              id="schema"
+              placeholder="Paste CREATE TABLE statements here..."
+              value={schema}
+              disabled={sessionId !== null}
+              onChange={(e) => setSchema(e.target.value)}
+            />
+
+            <label>Domain</label>
+            <input
+              id="domain"
+              type="text"
+              value={domain}
+              disabled={sessionId !== null}
+              onChange={(e) => setDomain(e.target.value)}
+            />
+
+            <div className="controls">
+              <button onClick={loadSchema} disabled={isSchemaLoading || sessionId !== null}>
+                {sessionId !== null ? 'Loaded' : isSchemaLoading ? 'Loading...' : 'Load Schema'}
+              </button>
+              <button onClick={newSession}>New Session</button>
+            </div>
+
+            <div id="schemaStatus" className={schemaStatus.className}>
+              {schemaStatus.text}
+            </div>
+          </div>
+
+          {/* API Config Component */}
+          <div className="card">
+            <h3>API Connection Configurations</h3>
+            <div className="controls" style={{ marginTop: '10px' }}>
+              <button type="button" onClick={showApiConfigForm}>
+                New API Config
+              </button>
+            </div>
+
+            {showApiForm && (
+              <div id="apiConfigForm" className="api-form">
+                <label>API Name</label>
+                <input id="name" type="text" placeholder="Example API" value={formFields.name} onChange={handleFormChange} />
+
+                <label>Endpoint URL</label>
+                <input id="endpoint" type="text" placeholder="https://api.example.com/data" value={formFields.endpoint} onChange={handleFormChange} />
+
+                <label>HTTP Method</label>
+                <select id="method" value={formFields.method} onChange={handleFormChange}>
+                  <option value="GET">GET</option>
+                  <option value="POST">POST</option>
+                </select>
+
+                <div id="headersSection" className={formFields.authRequired ? '' : 'hidden'}>
+                  <label>Headers (one per line: Key: Value)</label>
+                  <textarea id="headers" placeholder="Authorization: Bearer TOKEN" value={formFields.headers} onChange={handleFormChange} />
+                </div>
+
+                <label className="checkbox-row">
+                  <input id="authRequired" type="checkbox" checked={formFields.authRequired} onChange={handleFormChange} />
+                  <span>Authentication Required</span>
+                </label>
+
+                {formFields.authRequired && (
+                  <div id="authSection" className="auth-section">
+                    <label>Authentication Type</label>
+                    <select id="authType" value={formFields.authType} onChange={handleFormChange}>
+                      <option value="none">None</option>
+                      <option value="bearer">Bearer Token</option>
+                      <option value="api_key">API Key</option>
+                      <option value="basic">Basic Auth</option>
+                    </select>
+
+                    <div id="authFields">
+                      {formFields.authType === 'bearer' && (
+                        <>
+                          <label>Bearer Token</label>
+                          <input id="authToken" type="text" placeholder="Token" value={formFields.authToken} onChange={handleFormChange} />
+                        </>
+                      )}
+                      {formFields.authType === 'api_key' && (
+                        <>
+                          <label>Header Name</label>
+                          <input id="authKeyName" type="text" placeholder="X-API-Key" value={formFields.authKeyName} onChange={handleFormChange} />
+                          <label>Header Value</label>
+                          <input id="authKeyValue" type="text" placeholder="API Key" value={formFields.authKeyValue} onChange={handleFormChange} />
+                        </>
+                      )}
+                      {formFields.authType === 'basic' && (
+                        <>
+                          <label>Username</label>
+                          <input id="authUsername" type="text" placeholder="username" value={formFields.authUsername} onChange={handleFormChange} />
+                          <label>Password</label>
+                          <input id="authPassword" type="password" placeholder="password" value={formFields.authPassword} onChange={handleFormChange} />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <label>Request Body Template</label>
+                <textarea id="bodyTemplate" placeholder='{"query":"{{query}}"}' value={formFields.bodyTemplate} onChange={handleFormChange} />
+
+                <label>Response Format</label>
+                <select id="responseFormat" value={formFields.responseFormat} onChange={handleFormChange}>
+                  <option value="auto">Auto Detect</option>
+                  <option value="json">JSON</option>
+                  <option value="csv">CSV</option>
+                </select>
+
+                <div className="controls">
+                  <button type="button" onClick={saveApiConfig}>Save Config</button>
+                  <button type="button" onClick={validateApiConfig}>Validate</button>
+                  <button type="button" onClick={cancelApiConfigForm}>Cancel</button>
+                </div>
+              </div>
+            )}
+
+            <div id="apiConfigList" className="api-list">
+              {apiConfigs.length === 0 ? (
+                <p>No API configurations yet.</p>
+              ) : (
+                apiConfigs.map((config) => (
+                  <div className="api-item" key={config.id}>
+                    <strong>{config.name}</strong>
+                    <div>{config.endpoint}</div>
+                    <div>{config.method}</div>
+                    <div className="controls">
+                      <button type="button" onClick={() => editApiConfig(config)}>Edit</button>
+                      <button type="button" onClick={() => previewApiConfig(config.id)}>Preview</button>
+                      <button type="button" onClick={() => deleteApiConfig(config.id)}>Delete</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {apiPreview.visible && (
+              <div id="apiPreview" className="preview-panel">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h4 style={{ margin: 0 }}>Preview</h4>
+                  <div className="toggle-view-buttons" style={{ marginLeft: 'auto' }}>
+                    <button 
+                      type="button" 
+                      className={apiPreview.viewMode === 'table' ? 'active' : ''} 
+                      onClick={() => setApiPreview(prev => ({ ...prev, viewMode: 'table' }))}
+                      style={{ marginRight: '4px', padding: '2px 8px', fontSize: '12px' }}
+                    >Table</button>
+                    <button 
+                      type="button" 
+                      className={apiPreview.viewMode === 'json' ? 'active' : ''} 
+                      onClick={() => setApiPreview(prev => ({ ...prev, viewMode: 'json' }))}
+                      style={{ padding: '2px 8px', fontSize: '12px' }}
+                    >JSON</button>
+                  </div>
+                </div>
+                {apiPreview.error && <div className={apiPreview.error.includes('Loading') ? '' : 'error'}>{apiPreview.error}</div>}
+                {apiPreview.data && (
+                  <>
+                    <div style={{ fontSize: '12px', color: '#666' }}>Format: {apiPreview.format}</div>
+                    <DataRenderer data={apiPreview.data} viewMode={apiPreview.viewMode} />
+                  </>
+                )}
+              </div>
+            )}
+
+            {apiImportStatus.text && (
+              <div id="apiImportStatus" className={apiImportStatus.className}>
+                {apiImportStatus.text}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Chat History Panel */}
+        <div className="right-panel">
+          <div id="chatCard" className="card">
+            <h2 style={{ marginBottom: '15px' }}>Conversation</h2>
+
+            <div id="chatBox" className="chat-box" ref={chatBoxRef}>
+              {chatMessages.map((msg, idx) => (
+                <div className={`message ${msg.type}`} key={idx}>
+                  {msg.type === 'user' ? (
+                    <div className="bubble">{msg.content}</div>
+                  ) : (
+                    <div>
+                      <strong>Generated SQL</strong>
+                      <div className="sql">{msg.sql}</div>
+
+                      {/* Local Result Panel inside the assistant dialogue wrapper */}
+                      {(msg.previewLoading || msg.previewError || msg.previewData) && (
+                        <div className="preview-result" style={{ marginTop: '12px', background: '#f9fafb', padding: '10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
+                          {msg.previewLoading && <div>Loading preview...</div>}
+                          {msg.previewError && <div className="error">{msg.previewError}</div>}
+                          {msg.previewData && (
+                            <>
+                              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
+                                <h4 style={{ margin: 0 }}>Preview Result</h4>
+                                <div style={{ marginLeft: 'auto' }}>
+                                  <button 
+                                    type="button" 
+                                    onClick={() => setInlineViewMode(idx, 'table')} 
+                                    style={{ marginRight: '4px', padding: '2px 6px', fontSize: '11px', background: msg.viewMode === 'table' ? '#e5e7eb' : '' }}
+                                  >Table</button>
+                                  <button 
+                                    type="button" 
+                                    onClick={() => setInlineViewMode(idx, 'json')} 
+                                    style={{ padding: '2px 6px', fontSize: '11px', background: msg.viewMode === 'json' ? '#e5e7eb' : '' }}
+                                  >JSON</button>
+                                </div>
+                              </div>
+                              <div style={{ fontSize: '11px', color: '#777' }}>Format: {msg.previewFormat}</div>
+                              <DataRenderer data={msg.previewData} viewMode={msg.viewMode || 'table'} />
+                            </>
+                          )}
+                        </div>
+                      )}
+
+                      <div style={{ marginTop: '8px' }}>
+                        <button type="button" onClick={() => previewSqlWithApi(msg.sql, idx)}>
+                          Execute Query & Preview
+                        </button>
+                      </div>
+
+                      <div className="reasoning">💡 {msg.reasoning}</div>
+                      <div style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>
+                        Attempts: {msg.attempts}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {isChatLoading && <div className="loading">Thinking...</div>}
+            </div>
+
+            <div style={{ marginTop: '20px' }}>
+              <textarea
+                id="question"
+                placeholder="Ask your SQL question..."
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyPress={handleKeyPress}
+              />
+
+              <div className="controls">
+                <button id="sendBtn" onClick={sendQuestion} disabled={isChatLoading}>
+                  Send
+                </button>
+                <button onClick={resetConversation}>Reset Conversation</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="index.css">
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f5f7fb;
+    font-family: Inter, Arial, sans-serif;
+    color: #333;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 30px auto;
+}
+
+h1 {
+    color: #2563eb;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    transition: all 0.6s ease;
+}
+
+.left-panel {
+    flex: 1 1 100%;
+    max-width: 100%;
+    transition: all 0.6s ease;
+}
+
+.right-panel {
+    flex: 0 0 0;
+    max-width: 0;
+    opacity: 0;
+    transform: translateX(80px);
+    overflow: hidden;
+    pointer-events: none;
+    transition: all 0.6s ease;
+}
+
+.layout.session-active .left-panel {
+    flex: 0 0 30%;
+    max-width: 30%;
+}
+
+.layout.session-active .right-panel {
+    flex: 0 0 70%;
+    max-width: 70%;
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+textarea,
+input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+#schema {
+    height: 280px;
+    font-family: monospace;
+}
+
+#question {
+    height: 90px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 22px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.status {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}
+
+.chat-box {
+    height: 550px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    padding: 20px;
+}
+
+.message {
+    margin-bottom: 25px;
+}
+
+.user {
+    text-align: right;
+}
+
+.user .bubble {
+    display: inline-block;
+    background: #2563eb;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+.assistant {
+    text-align: left;
+}
+
+.sql {
+    background: #111827;
+    color: #e5e7eb;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    font-family: Consolas, monospace;
+}
+
+.reasoning {
+    margin-top: 10px;
+    color: #666;
+    font-style: italic;
+}
+
+.preview-result {
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+}
+
+.preview-result pre {
+    margin-top: 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 13px;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.api-form {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.checkbox-row input {
+    width: auto;
+    margin-bottom: 0;
+}
+
+.auth-section {
+    margin-top: 6px;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.api-list {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.api-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fafafa;
+}
+
+.preview-panel {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.preview-panel pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-top: 8px;
+}
+
+.hidden {
+    display: none;
+}
+
+.loading {
+    color: #2563eb;
+    font-style: italic;
+}
+
+@media (max-width: 900px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .layout.session-active .left-panel,
+    .layout.session-active .right-panel {
+        flex-basis: auto;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .right-panel {
+        transform: translateY(20px);
+    }
+
+    .layout.session-active .right-panel {
+        transform: translateY(0);
+    }
+}
+</file>
+
+<file path="main.jsx">
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+</file>
+
+</files>
