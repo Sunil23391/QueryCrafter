@@ -181,6 +181,62 @@ button:disabled {
     display: flex;
     gap: 15px;
     margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.api-form {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.checkbox-row input {
+    width: auto;
+    margin-bottom: 0;
+}
+
+.auth-section {
+    margin-top: 6px;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.api-list {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.api-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fafafa;
+}
+
+.preview-panel {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.preview-panel pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-top: 8px;
 }
 
 .hidden {

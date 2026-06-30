@@ -27,6 +27,71 @@
 
                 <div id="schemaStatus" class="status">No schema loaded.</div>
             </div>
+
+            <div class="card">
+                <h3>API Connection Configurations</h3>
+                <div class="controls" style="margin-top:10px;">
+                    <button type="button" onclick="showApiConfigForm()">New API Config</button>
+                </div>
+
+                <div id="apiConfigForm" class="api-form hidden">
+                    <label>API Name</label>
+                    <input id="apiName" type="text" placeholder="Example API">
+
+                    <label>Endpoint URL</label>
+                    <input id="apiEndpoint" type="text" placeholder="https://api.example.com/data">
+
+                    <label>HTTP Method</label>
+                    <select id="apiMethod">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                    </select>
+
+                    <div id="headersSection">
+                        <label>Headers (one per line: Key: Value)</label>
+                        <textarea id="apiHeaders" placeholder="Authorization: Bearer TOKEN"></textarea>
+                    </div>
+
+                    <label class="checkbox-row">
+                        <input id="authRequired" type="checkbox">
+                        <span>Authentication Required</span>
+                    </label>
+
+                    <div id="authSection" class="auth-section hidden">
+                        <label>Authentication Type</label>
+                        <select id="apiAuthType">
+                            <option value="none">None</option>
+                            <option value="bearer">Bearer Token</option>
+                            <option value="api_key">API Key</option>
+                            <option value="basic">Basic Auth</option>
+                        </select>
+
+                        <div id="authFields"></div>
+                    </div>
+
+                    <label>Request Body Template</label>
+                    <textarea id="apiBodyTemplate" placeholder="{"query":"{{query}}"}"></textarea>
+
+                    <label>Response Format</label>
+                    <select id="apiResponseFormat">
+                        <option value="auto">Auto Detect</option>
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                    </select>
+
+                    <div class="controls">
+                        <button type="button" onclick="saveApiConfig()">Save Config</button>
+                        <button type="button" onclick="validateApiConfig()">Validate</button>
+                        <button type="button" onclick="cancelApiConfigForm()">Cancel</button>
+                    </div>
+                </div>
+
+                <div id="apiConfigList" class="api-list"></div>
+
+                <div id="apiPreview" class="preview-panel hidden"></div>
+
+                <div id="apiImportStatus" class="status"></div>
+            </div>
         </div>
 
         <div class="right-panel">

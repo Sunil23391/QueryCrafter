@@ -1,4 +1,269 @@
 let sessionId = null;
+let activeApiConfigId = null;
+let apiConfigs = [];
+
+function toggleAuth() {
+    const authRequired = document.getElementById("authRequired").checked;
+    const authSection = document.getElementById("authSection");
+    const headersSection = document.getElementById("headersSection");
+    authSection.classList.toggle("hidden", !authRequired);
+    headersSection.classList.toggle("hidden", !authRequired);
+    if (!authRequired) {
+        document.getElementById("apiAuthType").value = "none";
+        document.getElementById("authFields").innerHTML = "";
+    } else {
+        renderAuthFields();
+    }
+}
+
+function renderAuthFields() {
+    const authType = document.getElementById("apiAuthType").value;
+    const container = document.getElementById("authFields");
+    container.innerHTML = "";
+
+    if (authType === "bearer") {
+        container.innerHTML = `
+            <label>Bearer Token</label>
+            <input id="authToken" type="text" placeholder="Token">
+        `;
+    } else if (authType === "api_key") {
+        container.innerHTML = `
+            <label>Header Name</label>
+            <input id="authKeyName" type="text" placeholder="X-API-Key">
+            <label>Header Value</label>
+            <input id="authKeyValue" type="text" placeholder="API Key">
+        `;
+    } else if (authType === "basic") {
+        container.innerHTML = `
+            <label>Username</label>
+            <input id="authUsername" type="text" placeholder="username">
+            <label>Password</label>
+            <input id="authPassword" type="password" placeholder="password">
+        `;
+    }
+}
+
+function showApiConfigForm() {
+    document.getElementById("apiConfigForm").classList.remove("hidden");
+    document.getElementById("authRequired").checked = false;
+    document.getElementById("apiAuthType").value = "none";
+    document.getElementById("authFields").innerHTML = "";
+    document.getElementById("headersSection").classList.add("hidden");
+    toggleAuth();
+}
+
+function cancelApiConfigForm() {
+    document.getElementById("apiConfigForm").classList.add("hidden");
+    document.getElementById("apiConfigForm").reset();
+    document.getElementById("authRequired").checked = false;
+    document.getElementById("apiAuthType").value = "none";
+    document.getElementById("authSection").classList.add("hidden");
+    document.getElementById("headersSection").classList.add("hidden");
+    document.getElementById("authFields").innerHTML = "";
+    activeApiConfigId = null;
+}
+
+function getApiFormData() {
+    return {
+        id: activeApiConfigId,
+        name: document.getElementById("apiName").value.trim(),
+        endpoint: document.getElementById("apiEndpoint").value.trim(),
+        method: document.getElementById("apiMethod").value,
+        headers: document.getElementById("apiHeaders").value.trim(),
+        body_template: document.getElementById("apiBodyTemplate").value.trim(),
+        response_format: document.getElementById("apiResponseFormat").value,
+        auth: getAuthData()
+    };
+}
+
+function getAuthData() {
+    const authRequired = document.getElementById("authRequired").checked;
+    if (!authRequired) {
+        return { required: false, type: "none" };
+    }
+
+    const type = document.getElementById("apiAuthType").value;
+    if (type === "bearer") {
+        return { required: true, type, token: document.getElementById("authToken")?.value || "" };
+    }
+    if (type === "api_key") {
+        return {
+            required: true,
+            type,
+            key_name: document.getElementById("authKeyName")?.value || "",
+            key_value: document.getElementById("authKeyValue")?.value || ""
+        };
+    }
+    if (type === "basic") {
+        return {
+            required: true,
+            type,
+            username: document.getElementById("authUsername")?.value || "",
+            password: document.getElementById("authPassword")?.value || ""
+        };
+    }
+    return { required: true, type: "none" };
+}
+
+async function saveApiConfig() {
+    const payload = getApiFormData();
+    if (!payload.name || !payload.endpoint) {
+        alert("Please provide an API name and endpoint.");
+        return;
+    }
+
+    const url = payload.id ? `/api-configs/${payload.id}` : "/api-configs";
+    const method = payload.id ? "PUT" : "POST";
+
+    const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+
+    if (!data.success) {
+        alert(data.error || "Unable to save API config.");
+        return;
+    }
+
+    await loadApiConfigs();
+    cancelApiConfigForm();
+    document.getElementById("apiImportStatus").innerHTML = "✅ API configuration saved.";
+    document.getElementById("apiImportStatus").className = "status success";
+}
+
+async function validateApiConfig() {
+    const payload = getApiFormData();
+    if (!payload.name || !payload.endpoint) {
+        alert("Please provide an API name and endpoint.");
+        return;
+    }
+
+    const url = payload.id ? `/api-configs/${payload.id}/validate` : "/api-configs/validate";
+    const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+
+    document.getElementById("apiImportStatus").innerHTML = data.success ? "✅ API connection validated." : `❌ ${data.error}`;
+    document.getElementById("apiImportStatus").className = data.success ? "status success" : "status error";
+}
+
+async function loadApiConfigs() {
+    const response = await fetch("/api-configs");
+    const data = await response.json();
+    apiConfigs = data.configs || [];
+    renderApiConfigs();
+}
+
+function renderApiConfigs() {
+    const list = document.getElementById("apiConfigList");
+    if (!apiConfigs.length) {
+        list.innerHTML = "<p>No API configurations yet.</p>";
+        return;
+    }
+
+    list.innerHTML = apiConfigs.map(config => `
+        <div class="api-item">
+            <strong>${escapeHtml(config.name)}</strong>
+            <div>${escapeHtml(config.endpoint)}</div>
+            <div>${escapeHtml(config.method)}</div>
+            <div class="controls">
+                <button type="button" onclick="editApiConfig('${config.id}')">Edit</button>
+                <button type="button" onclick="previewApiConfig('${config.id}')">Preview</button>
+                <button type="button" onclick="deleteApiConfig('${config.id}')">Delete</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+async function editApiConfig(id) {
+    const config = apiConfigs.find(item => item.id === id);
+    if (!config) return;
+    activeApiConfigId = config.id;
+    document.getElementById("apiName").value = config.name || "";
+    document.getElementById("apiEndpoint").value = config.endpoint || "";
+    document.getElementById("apiMethod").value = config.method || "GET";
+    document.getElementById("apiHeaders").value = (config.headers || []).map(item => `${item.key}: ${item.value}`).join("\n");
+    document.getElementById("apiBodyTemplate").value = config.body_template || "";
+    document.getElementById("apiResponseFormat").value = config.response_format || "auto";
+
+    const auth = config.auth || {};
+    const authRequired = auth.required !== undefined ? Boolean(auth.required) : auth.type !== "none";
+    document.getElementById("authRequired").checked = authRequired;
+    document.getElementById("apiAuthType").value = auth.type || "none";
+    toggleAuth();
+
+    if (authRequired && auth.type === "bearer") {
+        document.getElementById("authToken").value = auth.token || "";
+    } else if (authRequired && auth.type === "api_key") {
+        document.getElementById("authKeyName").value = auth.key_name || "";
+        document.getElementById("authKeyValue").value = auth.key_value || "";
+    } else if (authRequired && auth.type === "basic") {
+        document.getElementById("authUsername").value = auth.username || "";
+        document.getElementById("authPassword").value = auth.password || "";
+    }
+    showApiConfigForm();
+}
+
+async function deleteApiConfig(id) {
+    const response = await fetch(`/api-configs/${id}`, { method: "DELETE" });
+    const data = await response.json();
+    if (data.success) {
+        await loadApiConfigs();
+    }
+}
+
+async function previewApiConfig(id) {
+    const query = prompt("Enter a SQL-like query to preview the API response", "SELECT *");
+    if (!query) return;
+
+    const previewBox = document.getElementById("apiPreview");
+    previewBox.classList.remove("hidden");
+    previewBox.innerHTML = "Loading preview...";
+
+    const response = await fetch(`/api-configs/${id}/preview`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query })
+    });
+    const data = await response.json();
+
+    if (!data.success) {
+        previewBox.innerHTML = `<div class="error">${escapeHtml(data.error || "Preview failed")}</div>`;
+        return;
+    }
+
+    previewBox.innerHTML = `
+        <h4>Preview</h4>
+        <div>Format: ${escapeHtml(data.format || "unknown")}</div>
+        <pre>${escapeHtml(JSON.stringify(data.preview, null, 2))}</pre>
+    `;
+}
+
+async function importApiConfig(id) {
+    const query = prompt("Enter a SQL-like query to import data", "SELECT *");
+    if (!query) return;
+
+    const response = await fetch(`/api-configs/${id}/import`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, session_id: sessionId })
+    });
+    const data = await response.json();
+
+    if (!data.success) {
+        document.getElementById("apiImportStatus").innerHTML = `❌ ${data.error}`;
+        document.getElementById("apiImportStatus").className = "status error";
+        return;
+    }
+
+    document.getElementById("apiImportStatus").innerHTML = `✅ Imported ${data.rows.length} rows. ${data.ddl}`;
+    document.getElementById("apiImportStatus").className = "status success";
+}
 
 // ------------------------------------------------------------
 // Load Schema
@@ -219,3 +484,32 @@ document.getElementById("question").addEventListener("keypress", function (e) {
         sendQuestion();
     }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const authRequired = document.getElementById("authRequired");
+    const apiAuthType = document.getElementById("apiAuthType");
+
+    if (authRequired) {
+        authRequired.checked = false;
+        authRequired.addEventListener("change", toggleAuth);
+    }
+
+    if (apiAuthType) {
+        apiAuthType.addEventListener("change", renderAuthFields);
+    }
+
+    document.getElementById("authSection").classList.add("hidden");
+    document.getElementById("headersSection").classList.add("hidden");
+    document.getElementById("authFields").innerHTML = "";
+});
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        toggleAuth,
+        renderAuthFields,
+        showApiConfigForm,
+        cancelApiConfigForm,
+        getApiFormData,
+        getAuthData
+    };
+}
