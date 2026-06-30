@@ -5,141 +5,235 @@ import ollama
 
 TOOL_SCHEMA = {
     "name": "generate_sql_query",
-    "description": "Generates a SQL query based on schema and natural language question.",
+    "description": "Generate a SQL query from a natural language request.",
     "parameters": {
         "type": "object",
         "properties": {
-            "sql_query": {"type": "string", "description": "The valid SQL query string."},
-            "reasoning": {"type": "string", "description": "Brief explanation of the logic."}
+            "sql_query": {
+                "type": "string",
+                "description": "The SQL query."
+            },
+            "reasoning": {
+                "type": "string",
+                "description": "Short explanation."
+            }
         },
-        "required": ["sql_query"]
+        "required": [
+            "sql_query"
+        ]
     }
 }
 
-def clean_and_parse_json(raw_text: str) -> dict:
+
+def clean_and_parse_json(raw_text: str):
     """
-    Cleans raw text using advanced regex to find and parse JSON structures.
+    Attempts to recover valid JSON even if the model adds
+    markdown or extra text.
     """
-    cleaned = raw_text.strip()
-    
-    # 1. Remove standard markdown blocks if present
-    if cleaned.startswith("```json"):
-        cleaned = cleaned[7:]
-    elif cleaned.startswith("```"):
-        cleaned = cleaned[3:]
-    if cleaned.endswith("```"):
-        cleaned = cleaned[:-3]
-    cleaned = cleaned.strip()
-    
-    # 2. Try direct parsing first
+
+    text = raw_text.strip()
+
+    if text.startswith("```json"):
+        text = text[7:]
+
+    elif text.startswith("```"):
+        text = text[3:]
+
+    if text.endswith("```"):
+        text = text[:-3]
+
+    text = text.strip()
+
     try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
+        return json.loads(text)
+    except:
         pass
 
-    # 3. Regex Fallback: Extract the largest substring between the first '{' and last '}'
-    match = re.search(r'(\{.*\}).*', cleaned, re.DOTALL)
-    if match:
-        try:
-            return json.loads(match.group(1))
-        except json.JSONDecodeError:
-            pass
-            
-    # 4. Secondary Regex Fallback: Balance braces to handle trailing garbage text
-    braces_match = re.finditer(r'\{|\}', cleaned)
-    start_idx = -1
-    count = 0
-    for m in braces_match:
-        if m.group() == '{':
-            if count == 0:
-                start_idx = m.start()
-            count += 1
-        elif m.group() == '}':
-            count -= 1
-            if count == 0 and start_idx != -1:
-                try:
-                    return json.loads(cleaned[start_idx:m.end()])
-                except json.JSONDecodeError:
-                    continue
-                    
-    raise json.JSONDecodeError("Failed to isolate valid JSON structure.", raw_text, 0)
+    match = re.search(r"\{.*\}", text, re.DOTALL)
 
-def generate_sql_tool_call(schema: str, question: str, domain: str = "General", max_retries: int = 3):
+    if match:
+        return json.loads(match.group())
+
+    raise ValueError("Unable to parse JSON")
+
+
+def build_conversation(history):
     """
-    Formats the prompt via system messages, forces JSON output, and uses a retry loop 
-    with regex extraction to guarantee a valid output schema.
+    Converts previous conversation into prompt context.
     """
-    tool_schema_json = json.dumps(TOOL_SCHEMA, indent=2)
-    
-    # Use proper system instruction separation
-    system_prompt = (
-        "You are a database expert. Your sole function is to output valid JSON text "
-        f"matching this schema configuration:\n{tool_schema_json}\n"
-        "Do not include any conversational filler, markdown codeblocks, or extra text."
-    )
-    
-    user_prompt = (
-        f"[Domain]\n{domain}\n\n"
-        f"[Database Context]\n{schema}\n\n"
-        f"[Question]\n{question}\n\n"
-        "Fill out the schema completely. The field 'sql_query' is strictly required."
-    )
+
+    if not history:
+        return "No previous conversation."
+
+    conversation = []
+
+    for i, turn in enumerate(history, start=1):
+
+        assistant = turn.get("assistant", {})
+
+        conversation.append(
+            f"""
+Conversation {i}
+
+User:
+{turn.get("user","")}
+
+Generated SQL:
+{assistant.get("sql_query","")}
+
+Reasoning:
+{assistant.get("reasoning","")}
+""".strip()
+        )
+
+    return "\n\n".join(conversation)
+
+
+def generate_sql_tool_call(
+        schema,
+        history,
+        question,
+        domain="General",
+        max_retries=3
+):
+    """
+    Conversational SQL generation.
+
+    schema  -> stored once
+    history -> previous prompts
+    question -> latest user prompt
+    """
+
+    tool_schema = json.dumps(TOOL_SCHEMA, indent=2)
+
+    conversation = build_conversation(history)
+
+    system_prompt = f"""
+You are an expert SQL engineer.
+
+The database schema NEVER changes during this conversation.
+
+The user may ask follow-up questions like:
+
+- only active users
+- now sort descending
+- include country
+- group by month
+
+These refer to previous generated SQL.
+
+Always use the conversation history.
+
+Return ONLY valid JSON.
+
+Schema:
+
+{tool_schema}
+
+Do not use markdown.
+
+Do not explain outside JSON.
+"""
+
+    user_prompt = f"""
+Domain
+
+{domain}
+
+==========================
+DATABASE SCHEMA
+==========================
+
+{schema}
+
+==========================
+PREVIOUS CONVERSATION
+==========================
+
+{conversation}
+
+==========================
+CURRENT USER REQUEST
+==========================
+
+{question}
+
+Generate the SQL.
+
+Return JSON only.
+"""
 
     messages = [
-        {'role': 'system', 'content': system_prompt},
-        {'role': 'user', 'content': user_prompt}
+        {
+            "role": "system",
+            "content": system_prompt
+        },
+        {
+            "role": "user",
+            "content": user_prompt
+        }
     ]
 
-    last_error = ""
     raw_response = ""
-    
-    # Retry Loop with Exponential Backoff
+    last_error = ""
+
     for attempt in range(max_retries):
+
         try:
+
             if attempt > 0:
-                # Add brief pause before retrying
                 time.sleep(1.5 ** attempt)
-                
+
             response = ollama.chat(
-                model="lfm2.5-thinking:latest", 
+                model="gemma4:e2b",
+                # model="smollm:latest",
                 messages=messages,
-                format="json",  # Hardware/Engine constraint level forcing
+                format="json",
                 options={
-                    "temperature": 0.1 + (attempt * 0.15),  # Escalate temperature slightly on failure to break loops
+                    "temperature": 0.1 + attempt * 0.15,
                     "top_p": 0.9
                 }
             )
-            
-            raw_response = response['message']['content']
-            parsed_data = clean_and_parse_json(raw_response)
-            
-            # Normalize variations in keys (handles wrapped structures vs flat structures)
-            if "tool_call" in parsed_data:
-                arguments = parsed_data["tool_call"].get("arguments", {})
-            elif "arguments" in parsed_data:
-                arguments = parsed_data["arguments"]
-            else:
-                arguments = parsed_data
 
-            if "sql_query" in arguments and arguments.get("sql_query"):
-                return {
-                    "success": True,
-                    "sql_query": arguments["sql_query"],
-                    "reasoning": arguments.get("reasoning", "No reasoning provided."),
-                    "attempts_used": attempt + 1,
-                    "raw_json": raw_response
-                }
+            raw_response = response["message"]["content"]
+
+            parsed = clean_and_parse_json(raw_response)
+
+            if "tool_call" in parsed:
+                arguments = parsed["tool_call"].get("arguments", {})
+
+            elif "arguments" in parsed:
+                arguments = parsed["arguments"]
+
             else:
-                last_error = "Missing or empty required field: 'sql_query'"
-                
-        except json.JSONDecodeError as jde:
-            last_error = f"JSON parsing failed: {str(jde)}"
+                arguments = parsed
+
+            sql = arguments.get("sql_query")
+
+            if not sql:
+                raise ValueError("sql_query missing")
+
+            reasoning = arguments.get(
+                "reasoning",
+                "No reasoning provided."
+            )
+
+            return {
+                "success": True,
+                "assistant": {
+                    "sql_query": sql,
+                    "reasoning": reasoning
+                },
+                "attempts_used": attempt + 1,
+                "raw_json": raw_response
+            }
+
         except Exception as e:
-            last_error = f"Ollama connection or execution error: {str(e)}"
 
-    # If all retry attempts are exhausted
+            last_error = str(e)
+
     return {
         "success": False,
-        "error": f"Failed after {max_retries} attempts. Last error: {last_error}",
+        "error": last_error,
         "raw_json": raw_response
     }
