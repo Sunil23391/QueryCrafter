@@ -1,0 +1,214 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f5f7fb;
+    font-family: Inter, Arial, sans-serif;
+    color: #333;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 30px auto;
+}
+
+h1 {
+    color: #2563eb;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    transition: all 0.6s ease;
+}
+
+.left-panel {
+    flex: 1 1 100%;
+    max-width: 100%;
+    transition: all 0.6s ease;
+}
+
+.right-panel {
+    flex: 0 0 0;
+    max-width: 0;
+    opacity: 0;
+    transform: translateX(80px);
+    overflow: hidden;
+    pointer-events: none;
+    transition: all 0.6s ease;
+}
+
+.layout.session-active .left-panel {
+    flex: 0 0 30%;
+    max-width: 30%;
+}
+
+.layout.session-active .right-panel {
+    flex: 0 0 70%;
+    max-width: 70%;
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+textarea,
+input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+#schema {
+    height: 280px;
+    font-family: monospace;
+}
+
+#question {
+    height: 90px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 22px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.status {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}
+
+.chat-box {
+    height: 550px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    padding: 20px;
+}
+
+.message {
+    margin-bottom: 25px;
+}
+
+.user {
+    text-align: right;
+}
+
+.user .bubble {
+    display: inline-block;
+    background: #2563eb;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+.assistant {
+    text-align: left;
+}
+
+.sql {
+    background: #111827;
+    color: #e5e7eb;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    font-family: Consolas, monospace;
+}
+
+.reasoning {
+    margin-top: 10px;
+    color: #666;
+    font-style: italic;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+.loading {
+    color: #2563eb;
+    font-style: italic;
+}
+
+@media (max-width: 900px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .layout.session-active .left-panel,
+    .layout.session-active .right-panel {
+        flex-basis: auto;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .right-panel {
+        transform: translateY(20px);
+    }
+
+    .layout.session-active .right-panel {
+        transform: translateY(0);
+    }
+}
