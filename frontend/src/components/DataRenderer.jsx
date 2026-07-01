@@ -91,7 +91,10 @@ export default function DataRenderer({ data, viewMode }) {
       setIsComputing(false);
     }
   };
-
+  if (viewMode === 'table' && (!dataArray || dataArray.length === 0)) {
+    return <div style={{ marginTop: '10px', color: '#6b7280', fontSize: '14px' }}>No data available to display.</div>;
+  }
+  
   if (viewMode === 'table' && dataArray && dataArray.length > 0) {
     const sampleRow = dataArray[0];
     const headers = typeof sampleRow === 'object' && sampleRow !== null ? Object.keys(sampleRow) : ['Value'];

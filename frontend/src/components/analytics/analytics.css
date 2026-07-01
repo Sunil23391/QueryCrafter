@@ -1,14 +1,14 @@
 /* ============================================================
-   Analytics Dashboard — Premium Dark Glassmorphism Theme
+   Analytics Dashboard — Premium White & Black Minimalist Theme
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .analytics-root {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  background: #f8fafc; /* Soft minimalist light gray background */
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #e2e8f0;
+  color: #0f172a; /* Deep charcoal black text */
   padding: 32px 24px;
 }
 
@@ -17,7 +17,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #94a3b8;
+  color: #64748b;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -26,7 +26,7 @@
 }
 
 .analytics-back:hover {
-  color: #e2e8f0;
+  color: #0f172a;
 }
 
 /* ---- Header ---- */
@@ -38,13 +38,13 @@
 .analytics-header h1 {
   font-size: 28px;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #0f172a;
   margin-bottom: 6px;
   letter-spacing: -0.5px;
 }
 
 .analytics-header p {
-  color: #94a3b8;
+  color: #64748b;
   font-size: 15px;
   margin: 0;
 }
@@ -54,14 +54,13 @@
   display: flex;
   justify-content: center;
   gap: 4px;
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
   padding: 5px;
   max-width: 520px;
   margin: 0 auto 36px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .analytics-tab {
@@ -70,7 +69,7 @@
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 500;
-  color: #94a3b8;
+  color: #64748b;
   text-decoration: none;
   border-radius: 10px;
   transition: all 0.25s ease;
@@ -78,27 +77,25 @@
 }
 
 .analytics-tab:hover {
-  color: #e2e8f0;
-  background: rgba(148, 163, 184, 0.08);
+  color: #0f172a;
+  background: #f1f5f9;
 }
 
 .analytics-tab.active {
   color: #ffffff;
-  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  background: #0f172a; /* Solid stark black active tab */
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
 }
 
-/* ---- Glass Card ---- */
+/* ---- Glass Card converted to Clean White Panel ---- */
 .analytics-card {
-  background: rgba(30, 41, 59, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 28px;
   max-width: 960px;
   margin: 0 auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
 /* ---- Selectors Row ---- */
@@ -120,7 +117,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  color: #94a3b8;
+  color: #64748b;
   margin-bottom: 8px;
 }
 
@@ -129,34 +126,35 @@
   padding: 10px 14px;
   font-size: 14px;
   font-family: 'Inter', sans-serif;
-  color: #e2e8f0;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
   border-radius: 10px;
   outline: none;
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8.825L1.175 4 2.238 2.938 6 6.7 9.763 2.938 10.825 4z'/%3E%3C/svg%3E");
+  /* Icon changed to dark gray for high visibility on light backdrop */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8.825L1.175 4 2.238 2.938 6 6.7 9.763 2.938 10.825 4z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 32px;
 }
 
 .analytics-selector-group select:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
 }
 
 .analytics-selector-group select option {
-  background: #1e293b;
-  color: #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 /* ---- Chart Container ---- */
 .analytics-chart-container {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 20px 16px 12px;
   min-height: 380px;
@@ -176,8 +174,8 @@
 .analytics-stat {
   flex: 1;
   min-width: 140px;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 14px 16px;
   text-align: center;
@@ -195,11 +193,11 @@
 .analytics-stat .stat-value {
   font-size: 18px;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #0f172a;
 }
 
 .analytics-stat .stat-value.accent {
-  color: #818cf8;
+  color: #020617; /* Solid pitch black for highlight numbers */
 }
 
 /* ---- Empty State ---- */
@@ -211,13 +209,13 @@
 .analytics-empty .empty-icon {
   font-size: 48px;
   margin-bottom: 16px;
-  opacity: 0.5;
+  opacity: 0.8;
 }
 
 .analytics-empty h2 {
   font-size: 20px;
   font-weight: 600;
-  color: #e2e8f0;
+  color: #0f172a;
   margin-bottom: 8px;
 }
 
@@ -231,38 +229,38 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  color: #fff;
+  background: #0f172a;
+  color: #ffffff;
   text-decoration: none;
   padding: 10px 24px;
   border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
-  transition: box-shadow 0.2s;
+  transition: opacity 0.2s;
 }
 
 .analytics-empty a:hover {
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  opacity: 0.9;
 }
 
 /* ---- Recharts Tooltip Override ---- */
 .recharts-default-tooltip {
-  background: rgba(30, 41, 59, 0.95) !important;
-  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 .recharts-tooltip-label {
-  color: #e2e8f0 !important;
+  color: #0f172a !important;
   font-weight: 600 !important;
 }
 
 .recharts-tooltip-item {
-  color: #94a3b8 !important;
+  color: #64748b !important;
 }
 
-/* ---- Open in Analytics Button (used inside the main app) ---- */
+/* ---- Open in Analytics Button ---- */
 .btn-open-analytics {
   display: inline-flex;
   align-items: center;
@@ -270,9 +268,9 @@
   padding: 6px 14px;
   font-size: 12px;
   font-weight: 600;
-  color: #818cf8;
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
@@ -280,9 +278,8 @@
 }
 
 .btn-open-analytics:hover {
-  background: rgba(99, 102, 241, 0.2);
-  color: #a5b4fc;
-  border-color: rgba(99, 102, 241, 0.4);
+  background: #e2e8f0;
+  border-color: #94a3b8;
 }
 
 /* ---- Responsive ---- */
