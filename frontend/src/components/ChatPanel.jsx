@@ -1,6 +1,9 @@
 import React from 'react';
 import DataRenderer from './DataRenderer';
+import { useAnalyticsData } from '../components/analytics/AnalyticsContext';
+import { useNavigate } from 'react-router-dom';
 
+import { extractRowsForAnalytics } from '../utils/analytics';
 export default function ChatPanel({
   chatMessages,
   isChatLoading,
@@ -11,6 +14,8 @@ export default function ChatPanel({
   previewSqlWithApi,
   setInlineViewMode,
 }) {
+  const { setData: setAnalyticsData } = useAnalyticsData();
+  const navigate = useNavigate();
   return (
     <div className="right-panel">
       <div id="chatCard" className="card">
@@ -40,6 +45,20 @@ export default function ChatPanel({
                           </div>
                           <div style={{ fontSize: '11px', color: '#777' }}>Format: {msg.previewFormat}</div>
                           <DataRenderer data={msg.previewData} viewMode={msg.viewMode || 'table'} />
+
+                          <button
+                            type="button"
+                            className="btn-open-analytics"
+                            onClick={() => {
+                              const rows = extractRowsForAnalytics(msg.previewData);
+                              if (rows && rows.length > 0) {
+                                setAnalyticsData(rows);
+                                navigate('/dashboard/analytics/regression');
+                              } else {
+                                alert('No tabular data available to analyze.');
+                              }
+                            }}
+                          >📊 Open in Analytics</button>
                         </>
                       )}
                     </div>

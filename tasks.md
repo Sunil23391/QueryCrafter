@@ -66,3 +66,49 @@ Enhance the frontend results view and the FastAPI backend to allow users to perf
 
 ### Expected Output
 Provide modular code patches for the React frontend, the new FastAPI endpoint, the NumPy/scikit-learn calculation module, and its corresponding pytest script.
+
+
+=========================
+
+Act as an expert full-stack developer specializing in FastAPI, React, and Python data science libraries. Expand the "QueryCrafter" application to include a dedicated backend router system and versatile frontend chart components.
+
+### Objective
+Create a unified analytics feature that processes fetched SQL query results (JSON arrays) from the configured API, offering users multiple visualization routes: Linear Regression, Bar Charts, and Pie Charts.
+
+### 1. Backend Router Architecture (FastAPI)
+Create a dedicated APIRouter structure (e.g., `app/routers/analytics.py`) to keep processing routes organized by purpose. Include the following endpoints:
+
+- POST `/api/analytics/regression`:
+  * Accepts data array, x_column, and y_column.
+  * Uses NumPy or scikit-learn to compute the linear regression line (y = mx + c) and the standard deviation of residuals.
+  * Returns slope, intercept, standard deviation, and data coordinates.
+
+- POST `/api/analytics/aggregate/bar`:
+  * Accepts data array, category_column, and numeric_value_column.
+  * Uses Pandas/NumPy to group by the category and calculate sums/averages for bar charts.
+
+- POST `/api/analytics/aggregate/pie`:
+  * Accepts data array, category_column, and numeric_value_column.
+  * Processes data to calculate percentage distributions and absolute slices for pie charts.
+
+- Pytest Suite:
+  * Provide a test file verifying all three routes using mock JSON payloads. Test for empty data arrays and type errors.
+
+### 2. Frontend Charting Interface (React)
+Modify the query results viewing layout to include a full analytics panel:
+
+- Chart Type Selector:
+  * Provide an intuitive toggle or dropdown to switch between 'Scatter/Regression', 'Bar Chart', and 'Pie Chart'.
+
+- Dynamic Input Controls:
+  * Based on the selected chart type, dynamically show the required column selectors.
+  * Filter dropdown selections strictly by data type (e.g., categorical columns vs. numeric columns).
+
+- Visualization Components (e.g., using Recharts, Chart.js, or Plotly.js):
+  * Scatter + Regression Plot: Display the points, line of best fit, and standard deviation (via shading or error boundaries).
+  * Bar Chart: Display sorted categorical metrics clearly.
+  * Pie Chart: Render distinct color slices with responsive legend percentages.
+
+### Expected Output
+Provide the clean Python code for the FastAPI analytics router, the pytest script, and the modular React visualization component structure.
+
