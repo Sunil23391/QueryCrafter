@@ -386,3 +386,449 @@ A clean, modern interface for inputting schemas and questions, and viewing the g
    * Type a question like *"What is the average explainability score for Europe?"*
    * Click **Generate SQL Tool Call**.
    * The app will display the extracted SQL query, the model's reasoning, and the raw JSON tool call it outputted!
+
+
+   What you want is essentially to turn your application from a **single-turn SQL generator** into a **stateful conversational SQL assistant**.
+
+Instead of sending the DDL with every request, you load it once, keep it in server-side session memory, and then allow users to ask follow-up questions that build on previous ones.
+
+## Recommended Architecture
+
+Current flow:
+
+```
+User
+ ├── DDL
+ ├── Question
+ └── POST /generate
+        ↓
+ Ollama
+```
+
+New flow:
+
+```
+Session
+ ├── DDL (loaded once)
+ ├── Conversation History
+ └── Current Question
+
+Question 1
+DDL + Q1 --------------> SQL1
+
+Question 2
+DDL + Q1 + SQL1 + Q2 --> SQL2
+
+Question 3
+DDL + chat history ----> SQL3
+```
+
+Notice that the DDL is stored once and reused.
+
+---
+
+# Backend Changes
+
+## 1. Create a conversation/session object
+
+For a simple Flask app, an in-memory dictionary is enough.
+
+```python
+sessions = {}
+
+sessions["abc123"] = {
+    "schema": "...DDL...",
+    "history": [
+        {
+            "user": "Show all customers",
+            "sql": "SELECT * FROM customers;"
+        }
+    ]
+}
+```
+
+Later you can replace it with Redis or a database.
+
+---
+
+## 2. Separate Schema Upload
+
+Instead of one endpoint, make two.
+
+### Upload schema
+
+```
+POST /schema
+```
+
+Body
+
+```json
+{
+    "schema":"CREATE TABLE ..."
+}
+```
+
+Response
+
+```json
+{
+    "session_id":"abc123"
+}
+```
+
+Store
+
+```python
+sessions[session_id] = {
+    "schema": schema,
+    "history": []
+}
+```
+
+---
+
+### Chat endpoint
+
+```
+POST /chat
+```
+
+Body
+
+```json
+{
+    "session_id":"abc123",
+    "question":"Show only active customers"
+}
+```
+
+---
+
+## 3. Build Prompt from History
+
+Instead of
+
+```python
+Schema
+Question
+```
+
+construct
+
+```
+Database Schema
+
+<DDL>
+
+Conversation
+
+User:
+Show all customers
+
+Assistant:
+SELECT ...
+
+User:
+Show only active ones
+
+Generate SQL.
+```
+
+Example:
+
+```python
+conversation = ""
+
+for turn in history:
+    conversation += f"""
+User:
+{turn['user']}
+
+Assistant SQL:
+{turn['sql']}
+"""
+```
+
+Then
+
+```python
+user_prompt = f"""
+Database Schema
+
+{schema}
+
+Previous Conversation
+
+{conversation}
+
+Current User Request
+
+{question}
+"""
+```
+
+This allows questions like
+
+> now only from Europe
+
+because the model understands the context.
+
+---
+
+## 4. Save Responses
+
+After every successful generation
+
+```python
+history.append({
+    "user": question,
+    "sql": sql
+})
+```
+
+---
+
+# AI Engine
+
+Modify
+
+```python
+generate_sql_tool_call(
+    schema,
+    question,
+    domain
+)
+```
+
+to
+
+```python
+generate_sql_tool_call(
+    schema,
+    history,
+    question,
+    domain
+)
+```
+
+and inside
+
+```python
+conversation = ""
+
+for h in history:
+    conversation += f"""
+User:
+{h['user']}
+
+SQL:
+{h['sql']}
+"""
+```
+
+Include that conversation in the prompt before the current question.
+
+---
+
+# Frontend Changes
+
+Current page
+
+```
+DDL
+Question
+Generate
+```
+
+Instead make it
+
+```
++-------------------------+
+| DDL                     |
+|                         |
++-------------------------+
+
+[ Load Schema ]
+
+Status:
+✔ Schema Loaded
+
+-------------------------
+
+Chat
+
+User:
+Show all users
+
+↓
+
+SQL
+
+↓
+
+User:
+Only active ones
+
+↓
+
+SQL
+
+↓
+
+User:
+Sort by revenue
+
+↓
+
+SQL
+```
+
+After clicking **Load Schema**, disable the DDL textarea.
+
+```javascript
+schema.disabled = true;
+```
+
+Store
+
+```javascript
+let sessionId = "";
+```
+
+When
+
+```
+POST /schema
+```
+
+returns
+
+```json
+{
+   "session_id":"abc123"
+}
+```
+
+save
+
+```javascript
+sessionId = data.session_id;
+```
+
+Every later request sends
+
+```json
+{
+    "session_id": sessionId,
+    "question": question
+}
+```
+
+No schema is sent again.
+
+---
+
+# Optional: Show Chat History
+
+Instead of replacing the SQL output each time, append messages.
+
+```
+You:
+Show all employees
+
+SQL:
+SELECT *
+
+--------------------------------
+
+You:
+Only HR
+
+SQL:
+SELECT *
+WHERE department='HR'
+
+--------------------------------
+
+You:
+Order by salary descending
+
+SQL:
+SELECT *
+WHERE department='HR'
+ORDER BY salary DESC
+```
+
+This feels much more like a chatbot.
+
+---
+
+# Better Prompting
+
+You can also explicitly instruct the model to treat previous SQL as context:
+
+```
+System
+
+You are a SQL assistant.
+
+The database schema remains constant throughout the session.
+
+The conversation history contains previously generated SQL queries.
+
+When the user asks follow-up questions such as:
+
+- only active ones
+- sort by revenue
+- now group by month
+
+modify the previous query appropriately instead of generating a completely unrelated query.
+
+Always output JSON matching the required schema.
+```
+
+This tends to improve follow-up query quality.
+
+---
+
+## Overall Flow
+
+```text
+Load Page
+    │
+    ▼
+Paste DDL
+    │
+    ▼
+POST /schema
+    │
+    ▼
+Store schema + empty history
+    │
+    ▼
+session_id
+    │
+    ▼
+Ask Question 1
+    │
+    ▼
+schema + history + question → Ollama
+    │
+    ▼
+Save SQL to history
+    │
+    ▼
+Ask Question 2
+    │
+    ▼
+schema + history + question → Ollama
+    │
+    ▼
+Save SQL
+    │
+    ▼
+Continue conversation...
+```
+
+This design is scalable, reduces repeated prompt size by keeping the DDL on the server rather than resending it from the browser, and enables natural follow-up questions that refine previously generated SQL.

@@ -1,96 +1,239 @@
 import json
+import re
+import time
 import ollama
 
-# The exact tool schema used during training
 TOOL_SCHEMA = {
     "name": "generate_sql_query",
-    "description": "Generates a SQL query based on schema and natural language question.",
+    "description": "Generate a SQL query from a natural language request.",
     "parameters": {
         "type": "object",
         "properties": {
-            "sql_query": {"type": "string", "description": "The valid SQL query string."},
-            "reasoning": {"type": "string", "description": "Brief explanation of the logic."}
+            "sql_query": {
+                "type": "string",
+                "description": "The SQL query."
+            },
+            "reasoning": {
+                "type": "string",
+                "description": "Short explanation."
+            }
         },
-        "required": ["sql_query"]
+        "required": [
+            "sql_query"
+        ]
     }
 }
 
-def generate_sql_tool_call(schema: str, question: str, domain: str = "General"):
+
+def clean_and_parse_json(raw_text: str):
     """
-    Formats the prompt exactly as trained, calls the model, and parses the JSON tool call.
+    Attempts to recover valid JSON even if the model adds
+    markdown or extra text.
     """
-    
-    # 1. Construct the exact prompt format from the training notebook
-    tool_schema_json = json.dumps(TOOL_SCHEMA, indent=2)
-    
-    full_prompt = (
-        "<start_of_turn>user\n"
-        "You are a database expert with access to the following tool:\n"
-        f"{tool_schema_json}\n\n"
-        f"[Domain]\n{domain}\n\n"
-        f"[Database Context]\n{schema}\n\n"
-        f"[Question]\n{question}\n\n"
-        "If the question requires data retrieval, use the 'generate_sql_query' tool. "
-        "Respond ONLY with a JSON object containing the tool call.<end_of_turn>\n"
-        "<start_of_turn>model\n"
-    )
+
+    text = raw_text.strip()
+
+    if text.startswith("```json"):
+        text = text[7:]
+
+    elif text.startswith("```"):
+        text = text[3:]
+
+    if text.endswith("```"):
+        text = text[:-3]
+
+    text = text.strip()
 
     try:
-        # 2. Call Ollama (Change "sql-gemma-toolcall" to your actual model name)
-        response = ollama.chat(
-            model="lfm2.5-thinking:latest",  # <--- UPDATE THIS TO YOUR MODEL NAME
-            messages=[
-                {'role': 'user', 'content': full_prompt}
-            ],
-            options={
-                "temperature": 0.1,
-                "top_p": 0.9
-            }
+        return json.loads(text)
+    except:
+        pass
+
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+
+    if match:
+        return json.loads(match.group())
+
+    raise ValueError("Unable to parse JSON")
+
+
+def build_conversation(history):
+    """
+    Converts previous conversation into prompt context.
+    """
+
+    if not history:
+        return "No previous conversation."
+
+    conversation = []
+
+    for i, turn in enumerate(history, start=1):
+
+        assistant = turn.get("assistant", {})
+
+        conversation.append(
+            f"""
+Conversation {i}
+
+User:
+{turn.get("user","")}
+
+Generated SQL:
+{assistant.get("sql_query","")}
+
+Reasoning:
+{assistant.get("reasoning","")}
+""".strip()
         )
-        print('----')
-        print('----')
-        print(response['message'])
-        
-        print('----')
-        print('----')
-        
-        raw_response = response['message']['content'].strip()
-        
-        # 3. Parse the JSON Tool Call
-        # Clean up potential markdown artifacts if the model hallucinates them
-        if raw_response.startswith("```json"):
-            raw_response = raw_response[7:]
-        if raw_response.endswith("```"):
-            raw_response = raw_response[:-3]
-        raw_response = raw_response.strip()
-        
-        parsed_data = json.loads(raw_response)
-        
-        # Extract the SQL and reasoning from the tool call structure
-        if "tool_call" in parsed_data and parsed_data["tool_call"]["name"] == "generate_sql_query":
-            arguments = parsed_data["tool_call"]["arguments"]
+
+    return "\n\n".join(conversation)
+
+
+def generate_sql_tool_call(
+        schema,
+        history,
+        question,
+        domain="General",
+        max_retries=3
+):
+    """
+    Conversational SQL generation.
+
+    schema  -> stored once
+    history -> previous prompts
+    question -> latest user prompt
+    """
+
+    tool_schema = json.dumps(TOOL_SCHEMA, indent=2)
+
+    conversation = build_conversation(history)
+
+    system_prompt = f"""
+You are an expert SQL engineer.
+
+The database schema NEVER changes during this conversation.
+
+The user may ask follow-up questions like:
+
+- only active users
+- now sort descending
+- include country
+- group by month
+
+These refer to previous generated SQL.
+
+Always use the conversation history.
+
+Return ONLY valid JSON.
+
+Schema:
+
+{tool_schema}
+
+Do not use markdown.
+
+Do not explain outside JSON.
+"""
+
+    user_prompt = f"""
+Domain
+
+{domain}
+
+==========================
+DATABASE SCHEMA
+==========================
+
+{schema}
+
+==========================
+PREVIOUS CONVERSATION
+==========================
+
+{conversation}
+
+==========================
+CURRENT USER REQUEST
+==========================
+
+{question}
+
+Generate the SQL.
+
+Return JSON only.
+"""
+
+    messages = [
+        {
+            "role": "system",
+            "content": system_prompt
+        },
+        {
+            "role": "user",
+            "content": user_prompt
+        }
+    ]
+
+    raw_response = ""
+    last_error = ""
+
+    for attempt in range(max_retries):
+
+        try:
+
+            if attempt > 0:
+                time.sleep(1.5 ** attempt)
+
+            response = ollama.chat(
+                model="gemma4:e2b",
+                # model="smollm:latest",
+                messages=messages,
+                format="json",
+                options={
+                    "temperature": 0.1 + attempt * 0.15,
+                    "top_p": 0.9
+                }
+            )
+
+            raw_response = response["message"]["content"]
+
+            parsed = clean_and_parse_json(raw_response)
+
+            if "tool_call" in parsed:
+                arguments = parsed["tool_call"].get("arguments", {})
+
+            elif "arguments" in parsed:
+                arguments = parsed["arguments"]
+
+            else:
+                arguments = parsed
+
+            sql = arguments.get("sql_query")
+
+            if not sql:
+                raise ValueError("sql_query missing")
+
+            reasoning = arguments.get(
+                "reasoning",
+                "No reasoning provided."
+            )
+
             return {
                 "success": True,
-                "sql_query": arguments.get("sql_query", ""),
-                "reasoning": arguments.get("reasoning", "No reasoning provided."),
-                "raw_json": raw_response
-            }
-        else:
-            return {
-                "success": False,
-                "error": "Model did not return the expected tool_call structure.",
+                "assistant": {
+                    "sql_query": sql,
+                    "reasoning": reasoning
+                },
+                "attempts_used": attempt + 1,
                 "raw_json": raw_response
             }
 
-    except json.JSONDecodeError:
-        return {
-            "success": False,
-            "error": "Model output was not valid JSON.",
-            "raw_json": raw_response
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "error": f"An error occurred: {str(e)}",
-            "raw_json": ""
-        }
+        except Exception as e:
+
+            last_error = str(e)
+
+    return {
+        "success": False,
+        "error": last_error,
+        "raw_json": raw_response
+    }

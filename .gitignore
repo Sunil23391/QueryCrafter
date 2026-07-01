@@ -84,3 +84,52 @@ instance/
 
 # PyCharm / JetBrains
 .idea/
+
+# ==============================================================================
+# QueryCrafter Custom GitIgnore Configuration
+# ==============================================================================
+
+# Node / Frontend Build Dependencies
+frontend/node_modules/
+frontend/dist/
+frontend/.cache/
+frontend/package-lock.json
+
+# Python Environment and Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/
+env/
+
+# Repomix Outputs, Utility Scripts & Chunks
+repomix-*.xml
+frontend/src/repomix-output.xml
+repomix_chunks/
+file_structure.md
+tree.txt
+
+# Media Files, Demos, and Local Presentations
+*.mp4
+query_crafter_demo.mp4
+*.pptx
+QueryCrafter Presentation.pptx
+*.pdf
+QueryCrafterv001.pdf
+frontend/src/assets/hero.png
+
+# Miscellaneous Data / Temporary Notes
+ollama_models_list.txt
+USERREADME.md
+minimal application example.md
+presentation.md
+prompt.md
+tasks.md
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+repomix-output.xml
