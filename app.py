@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from ai_engine import generate_sql_tool_call
 from services.api_connector import ApiConnector
+from services.regression import compute_linear_regression
 import uuid
 import json
 
@@ -130,6 +131,24 @@ def validate_api_config():
 
     connector = ApiConnector(config)
     return jsonify(connector.validate_connection())
+
+
+@app.route("/api/analytics/regression", methods=["POST"])
+def regression_analytics():
+    data = request.get_json() or {}
+    rows = data.get("data") or []
+    x_column = data.get("x_column")
+    y_column = data.get("y_column")
+
+    if not x_column or not y_column:
+        return jsonify({"success": False, "error": "x_column and y_column are required."}), 400
+
+    try:
+        result = compute_linear_regression(rows, x_column, y_column)
+    except ValueError as exc:
+        return jsonify({"success": False, "error": str(exc)}), 400
+
+    return jsonify(result)
 
 
 @app.route("/api-configs/<config_id>/preview", methods=["POST"])

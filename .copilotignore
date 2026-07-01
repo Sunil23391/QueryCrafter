@@ -1,0 +1,29 @@
+# Ignore all Markdown documentation files
+**/*.md
+README.md
+
+# Ignore frontend configuration and assets
+*.config.js
+eslint.config.js
+frontend/package.json
+frontend/public/
+frontend/src/assets/
+
+# Ignore backend utility scripts and web assets
+repomix_craft/
+static/
+templates/
+# Cache directories and compiled python files
+**/__pycache__/
+*.pyc
+
+# Repomix outputs and temporary chunks
+repomix-output*.xml
+repomix_chunks/
+
+# Large media files
+*.mp4
+
+# Local notes, dumps, and logs
+ollama_models_list.txt
+tree.txt
