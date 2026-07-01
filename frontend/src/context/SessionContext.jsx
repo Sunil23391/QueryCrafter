@@ -50,10 +50,10 @@ export function SessionProvider({ children }) {
     }));
   };
 
-  const updateChatMessage = (index, message) => {
+  const updateChatMessage = (index, updatedMessage) => { // Renamed 'message' to 'updatedMessage' for clarity
     setSession((prev) => ({
       ...prev,
-      chatMessages: prev.chatMessages.map((msg, idx) => (idx === index ? message : msg)),
+      chatMessages: prev.chatMessages.map((msg, idx) => (idx === index ? updatedMessage : msg)),
     }));
   };
 

@@ -1,34 +1,121 @@
-import React from 'react';
+import React, { useState } from 'react'; // Import useState
 import DataRenderer from './DataRenderer';
 import { useAnalyticsData } from '../components/analytics/AnalyticsContext';
 import { useNavigate } from 'react-router-dom';
+import { useSession } from '../context/SessionContext'; // Import useSession
 
 import { extractRowsForAnalytics } from '../utils/analytics';
+
 export default function ChatPanel({
-  chatMessages,
+  chatMessages, // This will now come from useSession, but keeping for direct passed prop for initial setup
   isChatLoading,
   question,
   setQuestion,
   handleKeyPress,
   sendQuestion,
-  previewSqlWithApi,
+  previewSqlWithApi, // This function should now take the SQL to execute, not assume msg.sql
   setInlineViewMode,
 }) {
   const { setData: setAnalyticsData } = useAnalyticsData();
   const navigate = useNavigate();
+  const { session, updateChatMessage, clearChatMessages } = useSession(); // Use the session context
+  const currentChatMessages = session.chatMessages; // Get chat messages from session context
+
+  const [editingMessageIndex, setEditingMessageIndex] = useState(null);
+  const [editedSqlValue, setEditedSqlValue] = useState('');
+
+  const handleEditClick = (sql, index) => {
+    setEditingMessageIndex(index);
+    setEditedSqlValue(sql);
+  };
+
+  const handleSaveEdit = (index) => {
+    const originalMessage = currentChatMessages[index];
+    updateChatMessage(index, {
+      ...originalMessage,
+      sql: editedSqlValue, // Save the edited SQL
+      originalSql: originalMessage.originalSql || originalMessage.sql, // Store original if not already stored
+      // Reset preview related fields if you want the user to re-execute after editing
+      previewLoading: false,
+      previewError: null,
+      previewData: null,
+    });
+    setEditingMessageIndex(null);
+    setEditedSqlValue('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageIndex(null);
+    setEditedSqlValue('');
+  };
+
+  const handleRevertSql = (index) => {
+    const originalMessage = currentChatMessages[index];
+    if (originalMessage.originalSql) {
+      updateChatMessage(index, {
+        ...originalMessage,
+        sql: originalMessage.originalSql,
+        // Reset preview related fields as SQL changed
+        previewLoading: false,
+        previewError: null,
+        previewData: null,
+      });
+    }
+    setEditingMessageIndex(null); // Exit edit mode
+    setEditedSqlValue('');
+  };
+
+  // Modify previewSqlWithApi call to use the potentially edited SQL
+  const executePreview = (sqlToExecute, index) => {
+    previewSqlWithApi(sqlToExecute, index);
+  };
+
   return (
     <div className="right-panel">
       <div id="chatCard" className="card">
         <h2 style={{ marginBottom: '15px' }}>Conversation</h2>
         <div id="chatBox" className="chat-box">
-          {chatMessages.map((msg, idx) => (
+          {currentChatMessages.map((msg, idx) => ( // Use currentChatMessages from context
             <div className={`message ${msg.type}`} key={idx}>
               {msg.type === 'user' ? (
                 <div className="bubble">{msg.content}</div>
               ) : (
                 <div>
                   <strong>Generated SQL</strong>
-                  <div className="sql">{msg.sql}</div>
+                  {editingMessageIndex === idx ? (
+                    <>
+                      <textarea
+                        value={editedSqlValue}
+                        onChange={(e) => setEditedSqlValue(e.target.value)}
+                        style={{ width: '100%', minHeight: '80px', fontFamily: 'monospace', fontSize: '14px', padding: '8px' }}
+                      />
+                      <div style={{ marginTop: '5px' }}>
+                        <button type="button" onClick={() => handleSaveEdit(idx)} style={{ marginRight: '5px' }}>Save</button>
+                        <button type="button" onClick={handleCancelEdit}>Cancel</button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="sql">
+                      {msg.sql}
+                      <button
+                        type="button"
+                        onClick={() => handleEditClick(msg.sql, idx)}
+                        style={{ marginLeft: '10px', padding: '2px 6px', fontSize: '11px' }}
+                      >
+                        Edit
+                      </button>
+                      {msg.originalSql && msg.sql !== msg.originalSql && ( // Show revert only if originalSql exists and is different
+                        <button
+                          type="button"
+                          onClick={() => handleRevertSql(idx)}
+                          style={{ marginLeft: '5px', padding: '2px 6px', fontSize: '11px' }}
+                        >
+                          Revert Original
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   {(msg.previewLoading || msg.previewError || msg.previewData) && (
                     <div className="preview-result" style={{ marginTop: '12px', background: '#f9fafb', padding: '10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
                     >
@@ -64,7 +151,7 @@ export default function ChatPanel({
                     </div>
                   )}
                   <div style={{ marginTop: '8px' }}>
-                    <button type="button" onClick={() => previewSqlWithApi(msg.sql, idx)}>Execute Query & Preview</button>
+                    <button type="button" onClick={() => executePreview(msg.sql, idx)}>Execute Query & Preview</button>
                   </div>
                   <div className="reasoning">💡 {msg.reasoning}</div>
                   <div style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>Attempts: {msg.attempts}</div>
@@ -84,7 +171,7 @@ export default function ChatPanel({
           />
           <div className="controls">
             <button id="sendBtn" onClick={sendQuestion} disabled={isChatLoading}>Send</button>
-            <button onClick={() => { /* resetConversation placeholder */ }}>Reset Conversation</button>
+            <button onClick={clearChatMessages}>Reset Conversation</button> {/* Use clearChatMessages from context */}
           </div>
         </div>
       </div>
