@@ -1,0 +1,133 @@
+/* Variables for easy theming */
+:root {
+  --dropdown-bg: #ffffff;
+  --dropdown-border: #e5e7eb;
+  --dropdown-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --primary-color: #2563eb; /* Blue-600 */
+  --primary-hover: #1d4ed8; /* Blue-700 */
+  --text-color: #1f2937;
+  --text-hover: #ffffff;
+  --hover-bg: #f3f4f6;
+  --transition-speed: 0.2s;
+}
+
+/* Base Container */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+  margin: 0.5rem;
+}
+
+/* Trigger Button */
+.dropdown-trigger {
+  background-color: var(--primary-color);
+  color: var(--text-hover);
+  border: none;
+  padding: 0.625rem 1.25rem; /* 10px 20px */
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color var(--transition-speed) ease;
+  font-size: 1rem;
+}
+
+.dropdown-trigger:hover {
+  background-color: var(--primary-hover);
+}
+
+.dropdown-trigger:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+/* Arrow Icon */
+.dropdown-trigger .arrow {
+  font-size: 0.75rem;
+  transition: transform var(--transition-speed) ease;
+  display: inline-block;
+}
+
+.dropdown-trigger .arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 220px;
+  background-color: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--dropdown-shadow);
+  padding: 0.5rem 0;
+  z-index: 50;
+  
+  /* Animation */
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  transition: all var(--transition-speed) ease;
+}
+
+.dropdown-menu.visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.dropdown-menu.hidden {
+  display: none;
+}
+
+/* Menu Items */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+  font-size: 0.9375rem;
+  text-decoration: none;
+  list-style: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-color);
+}
+
+.dropdown-item.active {
+  background-color: var(--primary-color);
+  color: var(--text-hover);
+}
+
+/* Icon inside item */
+.dropdown-item .icon {
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+}
+
+/* Focus styles for keyboard users */
+.dropdown-item:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+}
+
+/* Divider (Optional - add a class to items if needed) */
+.dropdown-item.divider {
+  height: 1px;
+  background-color: var(--dropdown-border);
+  margin: 0.5rem 0;
+  padding: 0;
+  cursor: default;
+}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'; // Import useState
 import DataRenderer from './DataRenderer';
+import OpenAnalyticsDropdown from './OpenAnalyticsDropdown';
 import { useAnalyticsData } from '../components/analytics/AnalyticsContext';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext'; // Import useSession
@@ -133,19 +134,22 @@ export default function ChatPanel({
                           <div style={{ fontSize: '11px', color: '#777' }}>Format: {msg.previewFormat}</div>
                           <DataRenderer data={msg.previewData} viewMode={msg.viewMode || 'table'} />
 
-                          <button
-                            type="button"
-                            className="btn-open-analytics"
-                            onClick={() => {
-                              const rows = extractRowsForAnalytics(msg.previewData);
-                              if (rows && rows.length > 0) {
-                                setAnalyticsData(rows);
-                                navigate('/dashboard/analytics/regression');
-                              } else {
-                                alert('No tabular data available to analyze.');
-                              }
-                            }}
-                          >📊 Open in Analytics</button>
+                          <div className="mt-3">
+                            <OpenAnalyticsDropdown
+                              buttonLabel="📊 Open in Analytics"
+                              buttonClassName="btn-open-analytics"
+                              onSelect={(path) => {
+                                const rows = extractRowsForAnalytics(msg.previewData);
+                                console.log('Extracted rows for analytics:', rows);
+                                if (rows && rows.length > 0) {
+                                  setAnalyticsData(rows);
+                                  navigate(path);
+                                } else {
+                                  alert('No tabular data available to analyze.');
+                                }
+                              }}
+                            />
+                          </div>
                         </>
                       )}
                     </div>
@@ -170,8 +174,10 @@ export default function ChatPanel({
             onKeyPress={handleKeyPress}
           />
           <div className="controls">
-            <button id="sendBtn" onClick={sendQuestion} disabled={isChatLoading}>Send</button>
-            <button onClick={clearChatMessages}>Reset Conversation</button> {/* Use clearChatMessages from context */}
+            <button id="sendBtn" onClick={sendQuestion} disabled={isChatLoading}>
+              Send
+            </button>
+            <button onClick={clearChatMessages}>Reset Conversation</button>
           </div>
         </div>
       </div>

@@ -25,9 +25,8 @@ export default function App() {
           <Route path="barchart" element={<BarChartView />} />
           <Route path="piechart" element={<PieChartView />} />
         </Route>
-        <Route path="/*" element={<QueryCrafter />} />
+        <Route path="*" element={<QueryCrafter />} />
       </Routes>
     </AnalyticsProvider>
   );
 }
-

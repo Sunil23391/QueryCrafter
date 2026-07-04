@@ -11,20 +11,26 @@ const defaultState = {
   chatMessages: [],
 };
 
-export function SessionProvider({ children }) {
-  const [session, setSession] = useState(defaultState);
+const createDefaultSession = () => ({ ...defaultState, chatMessages: [] });
 
-  // Load from localStorage on startup
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setSession(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.error('Failed to load session', e);
-    }
-  }, []);
+const readSavedSession = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return createDefaultSession();
+    const parsed = JSON.parse(saved);
+    return {
+      ...createDefaultSession(),
+      ...parsed,
+      chatMessages: Array.isArray(parsed?.chatMessages) ? parsed.chatMessages : [],
+    };
+  } catch (e) {
+    console.error('Failed to load session', e);
+    return createDefaultSession();
+  }
+};
+
+export function SessionProvider({ children }) {
+  const [session, setSession] = useState(readSavedSession);
 
   // Persist on every change
   useEffect(() => {
@@ -39,7 +45,7 @@ export function SessionProvider({ children }) {
   };
 
   const clearSession = () => {
-    setSession(defaultState);
+    setSession(createDefaultSession());
     localStorage.removeItem(STORAGE_KEY);
   };
 
