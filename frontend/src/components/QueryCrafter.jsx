@@ -16,7 +16,6 @@ export default function QueryCrafter() {
   const {
     session,
     sessionId,
-    updateSession,
     appendChatMessage,
     updateChatMessage,
     clearChatMessages,
@@ -54,6 +53,7 @@ export default function QueryCrafter() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [schemaDraft, setSchemaDraft] = useState('');
   const [domainDraft, setDomainDraft] = useState('General');
+  const [showTechPanel, setShowTechPanel] = useState(false);
   const chatBoxRef = useRef(null);
 
   const schema = session.schema;
@@ -235,6 +235,10 @@ export default function QueryCrafter() {
     } catch (error) {
       alert(error.message);
     }
+  };
+
+  const toggleTechPanel = () => {
+    setShowTechPanel((prev) => !prev);
   };
 
   const getAuthData = () => {
@@ -518,7 +522,7 @@ export default function QueryCrafter() {
   };
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${showTechPanel ? 'tech-open' : ''}`}>
       <ConversationSidebar
         conversations={conversations}
         activeConversationId={activeConversationId}
@@ -529,137 +533,161 @@ export default function QueryCrafter() {
       />
 
       <main className="workspace">
-        <section className="workspace-grid">
-          <div className="card schema-card">
-            <div className="card-header">
-              <div>
-                <div className="sidebar-kicker">Schema</div>
-                <h2>Current conversation</h2>
-              </div>
-              <button type="button" onClick={newConversation} disabled={!session.sessionId}>
-                New Chat
-              </button>
-            </div>
-
-            <label>Database Schema (DDL)</label>
-            <textarea
-              id="schema"
-              placeholder="Paste CREATE TABLE statements here..."
-              value={schemaDraft}
-              onChange={(e) => setSchemaDraft(e.target.value)}
-            />
-
-            <label>Domain</label>
-            <input value={domainDraft} onChange={(e) => setDomainDraft(e.target.value)} />
-
-            <div className="controls">
-              <button onClick={loadSchema} disabled={isSchemaLoading}>
-                {isSchemaLoading ? 'Loading...' : session.sessionId ? 'Save Schema' : 'Load Schema'}
-              </button>
-              <button onClick={resetConversation} disabled={!session.sessionId}>
-                Reset Conversation
-              </button>
-            </div>
-
-            <div id="schemaStatus" className={schemaStatus.className}>
-              {schemaStatus.text}
-            </div>
+        <header className="workspace-header card">
+          <div>
+            <div className="sidebar-kicker">Active conversation</div>
+            <h1>{session.conversations.find((item) => item.id === activeConversationId)?.title || 'New chat'}</h1>
           </div>
+          <button type="button" className="tech-toggle" onClick={toggleTechPanel}>
+            {showTechPanel ? 'Close Tech' : 'View Tech'}
+          </button>
+        </header>
 
-          <div className="card api-card">
-            <div className="card-header">
-              <div>
-                <div className="sidebar-kicker">API</div>
-                <h2>Connections</h2>
-              </div>
-              <button type="button" onClick={showApiConfigForm}>
-                New API Config
-              </button>
-            </div>
-
-            <ApiConfigForm
-              formFields={formFields}
-              handleFormChange={handleFormChange}
-              saveApiConfig={saveApiConfig}
-              validateApiConfig={validateApiConfig}
-              cancelApiConfigForm={cancelApiConfigForm}
-              showApiForm={showApiForm}
-            />
-
-            <ApiConfigList
-              apiConfigs={apiConfigs}
-              editApiConfig={editApiConfig}
-              previewApiConfig={previewApiConfig}
-              deleteApiConfig={deleteApiConfig}
-            />
-
-            {apiPreview.visible && (
-              <div id="apiPreview" className="preview-panel">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <h4 style={{ margin: 0 }}>Preview</h4>
-                  <div className="toggle-view-buttons" style={{ marginLeft: 'auto' }}>
-                    <button
-                      type="button"
-                      className={apiPreview.viewMode === 'table' ? 'active' : ''}
-                      onClick={() => setApiPreview((prev) => ({ ...prev, viewMode: 'table' }))}
-                      style={{ marginRight: '4px', padding: '2px 8px', fontSize: '12px' }}
-                    >
-                      Table
-                    </button>
-                    <button
-                      type="button"
-                      className={apiPreview.viewMode === 'json' ? 'active' : ''}
-                      onClick={() => setApiPreview((prev) => ({ ...prev, viewMode: 'json' }))}
-                      style={{ padding: '2px 8px', fontSize: '12px' }}
-                    >
-                      JSON
-                    </button>
-                  </div>
-                </div>
-                {apiPreview.error && <div className={apiPreview.error.includes('Loading') ? '' : 'error'}>{apiPreview.error}</div>}
-                {apiPreview.data && (
-                  <>
-                    <div style={{ fontSize: '12px', color: '#666' }}>Format: {apiPreview.format}</div>
-                    <DataRenderer data={apiPreview.data} viewMode={apiPreview.viewMode} />
-                    <button
-                      type="button"
-                      className="btn-open-analytics"
-                      onClick={() => {
-                        const rows = extractRowsForAnalytics(apiPreview.data);
-                        if (rows && rows.length > 0) {
-                          setAnalyticsData(rows);
-                          navigate('/dashboard/analytics/regression');
-                        } else {
-                          alert('No tabular data available to analyze.');
-                        }
-                      }}
-                    >
-                      📊 Open in Analytics
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-
-            {apiImportStatus.text && <div id="apiImportStatus" className={apiImportStatus.className}>{apiImportStatus.text}</div>}
-          </div>
-
-          <ChatPanel
-            chatMessages={chatMessages}
-            isChatLoading={isChatLoading}
-            question={question}
-            setQuestion={setQuestion}
-            handleKeyPress={handleKeyPress}
-            sendQuestion={sendQuestion}
-            previewSqlWithApi={previewSqlWithApi}
-            setInlineViewMode={setInlineViewMode}
+        <ChatPanel
+          chatMessages={chatMessages}
+          isChatLoading={isChatLoading}
+          question={question}
+          setQuestion={setQuestion}
+          handleKeyPress={handleKeyPress}
+          sendQuestion={sendQuestion}
+          previewSqlWithApi={previewSqlWithApi}
+          setInlineViewMode={setInlineViewMode}
           onResetConversation={resetConversation}
           onEditMessage={handleEditMessage}
           onRevertMessage={handleRevertMessage}
           chatBoxRef={chatBoxRef}
         />
-      </section>
-    </main>
-  </div>
+      </main>
+
+      <aside className="tech-drawer card" aria-hidden={!showTechPanel}>
+        <div className="tech-drawer-inner">
+          <div className="tech-drawer-header">
+            <div>
+              <div className="sidebar-kicker">Technical context</div>
+              <h2>Schema & API</h2>
+            </div>
+            <button type="button" className="tech-close" onClick={toggleTechPanel}>
+              Close
+            </button>
+          </div>
+
+          <div className="tech-stack">
+            <div className="card schema-card">
+              <div className="card-header">
+                <div>
+                  <div className="sidebar-kicker">Schema</div>
+                  <h2>Current conversation</h2>
+                </div>
+                <button type="button" onClick={newConversation} disabled={!session.sessionId}>
+                  New Chat
+                </button>
+              </div>
+
+              <label>Database Schema (DDL)</label>
+              <textarea
+                id="schema"
+                placeholder="Paste CREATE TABLE statements here..."
+                value={schemaDraft}
+                onChange={(e) => setSchemaDraft(e.target.value)}
+              />
+
+              <label>Domain</label>
+              <input value={domainDraft} onChange={(e) => setDomainDraft(e.target.value)} />
+
+              <div className="controls">
+                <button onClick={loadSchema} disabled={isSchemaLoading}>
+                  {isSchemaLoading ? 'Loading...' : session.sessionId ? 'Save Schema' : 'Load Schema'}
+                </button>
+                <button onClick={resetConversation} disabled={!session.sessionId}>
+                  Reset Conversation
+                </button>
+              </div>
+
+              <div id="schemaStatus" className={schemaStatus.className}>
+                {schemaStatus.text}
+              </div>
+            </div>
+
+            <div className="card api-card">
+              <div className="card-header">
+                <div>
+                  <div className="sidebar-kicker">API</div>
+                  <h2>Connections</h2>
+                </div>
+                <button type="button" onClick={showApiConfigForm}>
+                  New API Config
+                </button>
+              </div>
+
+              <ApiConfigForm
+                formFields={formFields}
+                handleFormChange={handleFormChange}
+                saveApiConfig={saveApiConfig}
+                validateApiConfig={validateApiConfig}
+                cancelApiConfigForm={cancelApiConfigForm}
+                showApiForm={showApiForm}
+              />
+
+              <ApiConfigList
+                apiConfigs={apiConfigs}
+                editApiConfig={editApiConfig}
+                previewApiConfig={previewApiConfig}
+                deleteApiConfig={deleteApiConfig}
+              />
+
+              {apiPreview.visible && (
+                <div id="apiPreview" className="preview-panel">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <h4 style={{ margin: 0 }}>Preview</h4>
+                    <div className="toggle-view-buttons" style={{ marginLeft: 'auto' }}>
+                      <button
+                        type="button"
+                        className={apiPreview.viewMode === 'table' ? 'active' : ''}
+                        onClick={() => setApiPreview((prev) => ({ ...prev, viewMode: 'table' }))}
+                        style={{ marginRight: '4px', padding: '2px 8px', fontSize: '12px' }}
+                      >
+                        Table
+                      </button>
+                      <button
+                        type="button"
+                        className={apiPreview.viewMode === 'json' ? 'active' : ''}
+                        onClick={() => setApiPreview((prev) => ({ ...prev, viewMode: 'json' }))}
+                        style={{ padding: '2px 8px', fontSize: '12px' }}
+                      >
+                        JSON
+                      </button>
+                    </div>
+                  </div>
+                  {apiPreview.error && <div className={apiPreview.error.includes('Loading') ? '' : 'error'}>{apiPreview.error}</div>}
+                  {apiPreview.data && (
+                    <>
+                      <div style={{ fontSize: '12px', color: '#666' }}>Format: {apiPreview.format}</div>
+                      <DataRenderer data={apiPreview.data} viewMode={apiPreview.viewMode} />
+                      <button
+                        type="button"
+                        className="btn-open-analytics"
+                        onClick={() => {
+                          const rows = extractRowsForAnalytics(apiPreview.data);
+                          if (rows && rows.length > 0) {
+                            setAnalyticsData(rows);
+                            navigate('/dashboard/analytics/regression');
+                          } else {
+                            alert('No tabular data available to analyze.');
+                          }
+                        }}
+                      >
+                        📊 Open in Analytics
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {apiImportStatus.text && <div id="apiImportStatus" className={apiImportStatus.className}>{apiImportStatus.text}</div>}
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
   );
 }

@@ -101,9 +101,14 @@ p {
   width: min(1600px, calc(100vw - 32px));
   margin: 16px auto 24px;
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-columns: 320px minmax(0, 1fr) 0fr;
   gap: 18px;
   align-items: start;
+  transition: grid-template-columns 220ms ease;
+}
+
+.app-shell.tech-open {
+  grid-template-columns: 320px minmax(0, 1fr) minmax(340px, 420px);
 }
 
 .card {
@@ -157,6 +162,12 @@ p {
 
 .sidebar-search {
   border-radius: 999px;
+}
+
+.conversation-rename-input {
+  font-size: 0.94rem;
+  padding: 0.72rem 0.9rem;
+  border-radius: 14px;
 }
 
 .sidebar-list {
@@ -236,13 +247,66 @@ p {
 
 .workspace {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.workspace-grid {
-  display: grid;
-  grid-template-columns: minmax(280px, 0.82fr) minmax(300px, 0.88fr) minmax(520px, 1.4fr);
-  gap: 18px;
-  align-items: start;
+.workspace-header {
+  padding: 16px 18px;
+}
+
+.workspace-header h1 {
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.tech-toggle,
+.tech-close {
+  border-radius: 999px;
+  padding: 0.72rem 0.95rem;
+  white-space: nowrap;
+}
+
+.tech-drawer {
+  min-width: 0;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(18px);
+  transition: max-width 220ms ease, opacity 180ms ease, transform 220ms ease;
+  position: sticky;
+  top: 16px;
+}
+
+.app-shell.tech-open .tech-drawer {
+  max-width: 100%;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.tech-drawer-inner {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+.tech-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tech-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .schema-card,
@@ -432,7 +496,17 @@ p {
     max-height: none;
   }
 
-  .workspace-grid {
+  .workspace-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tech-drawer {
+    position: relative;
+    top: 0;
+  }
+
+  .app-shell.tech-open {
     grid-template-columns: 1fr;
   }
 }
