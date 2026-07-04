@@ -1,40 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import ApiConfigForm from './ApiConfigForm';
 import ApiConfigList from './ApiConfigList';
 import ChatPanel from './ChatPanel';
+import ConversationSidebar from './ConversationSidebar';
 import DataRenderer from './DataRenderer';
-import { AnalyticsProvider, useAnalyticsData } from './analytics/AnalyticsContext';
-import AnalyticsLayout from './analytics/AnalyticsLayout';
-import RegressionView from './analytics/RegressionView';
-import BarChartView from './analytics/BarChartView';
-import PieChartView from './analytics/PieChartView';
+import { useAnalyticsData } from './analytics/AnalyticsContext';
 import { extractRowsForAnalytics } from '../utils/analytics';
 import { useSession } from '../context/SessionContext';
+
 export default function QueryCrafter() {
   const navigate = useNavigate();
   const { setData: setAnalyticsData } = useAnalyticsData();
-
-  const { session, updateSession, clearSession, appendChatMessage, updateChatMessage, clearChatMessages } = useSession();
-  const sessionId = session.sessionId;
-  const schema = session.schema;
-  const domain = session.domain;
-  const chatMessages = session.chatMessages;
+  const {
+    session,
+    sessionId,
+    updateSession,
+    appendChatMessage,
+    updateChatMessage,
+    clearChatMessages,
+    setSessionIdentity,
+    upsertConversation,
+    replaceConversationMessages,
+    selectConversation,
+    loadConversationMessages,
+    refreshSession,
+  } = useSession();
 
   const [isSchemaLoading, setIsSchemaLoading] = useState(false);
   const [schemaStatus, setSchemaStatus] = useState({ text: 'No schema loaded.', className: 'status' });
-
-  // API Config Panel States
   const [apiConfigs, setApiConfigs] = useState([]);
   const [showApiForm, setShowApiForm] = useState(false);
   const [activeApiConfigId, setActiveApiConfigId] = useState(null);
   const [apiImportStatus, setApiImportStatus] = useState({ text: '', className: 'status' });
-
-  // Standalone API Global Preview Overlay State
   const [apiPreview, setApiPreview] = useState({ visible: false, format: '', data: null, error: '', viewMode: 'table' });
-
-  // API Form Fields State
   const [formFields, setFormFields] = useState({
     name: '',
     endpoint: '',
@@ -48,41 +48,55 @@ export default function QueryCrafter() {
     authKeyName: '',
     authKeyValue: '',
     authUsername: '',
-    authPassword: ''
+    authPassword: '',
   });
-
-  // Chat/Conversation States
   const [question, setQuestion] = useState('');
   const [isChatLoading, setIsChatLoading] = useState(false);
-
+  const [schemaDraft, setSchemaDraft] = useState('');
+  const [domainDraft, setDomainDraft] = useState('General');
   const chatBoxRef = useRef(null);
 
-  // Auto-scroll chat box when new messages arrive or when thinking status finishes
+  const schema = session.schema;
+  const domain = session.domain;
+  const chatMessages = session.chatMessages;
+  const conversations = session.conversations || [];
+  const activeConversationId = session.activeConversationId;
+
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [chatMessages, isChatLoading]);
 
-  // Load API configurations from backend on initial mount
+  useEffect(() => {
+    setSchemaDraft(schema || '');
+    setDomainDraft(domain || 'General');
+  }, [schema, domain, activeConversationId]);
+
   useEffect(() => {
     loadApiConfigs();
   }, []);
 
-  // Universal handler for all inputs inside the API configuration form
   const handleFormChange = (e) => {
     const { id, value, type, checked } = e.target;
     setFormFields((prev) => ({
       ...prev,
-      [id]: type === 'checkbox' ? checked : value
+      [id]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  // ------------------------------------------------------------
-  // Database Schema (DDL) Handlers
-  // ------------------------------------------------------------
+  const loadApiConfigs = async () => {
+    try {
+      const response = await fetch('/api-configs');
+      const data = await response.json();
+      setApiConfigs(data.configs || []);
+    } catch (err) {
+      console.error('Failed to fetch API configs:', err);
+    }
+  };
+
   const loadSchema = async () => {
-    if (!schema.trim()) {
+    if (!schemaDraft.trim()) {
       alert('Please enter a database schema.');
       return;
     }
@@ -94,23 +108,25 @@ export default function QueryCrafter() {
       const response = await fetch('/schema', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schema, domain })
+        body: JSON.stringify({
+          session_id: sessionId,
+          conversation_id: activeConversationId,
+          schema: schemaDraft,
+          domain: domainDraft,
+        }),
       });
       const data = await response.json();
 
       if (!data.success) {
         alert(data.error);
         setSchemaStatus({ text: 'No schema loaded.', className: 'status error' });
-        setIsSchemaLoading(false);
         return;
       }
 
-      updateSession({
-        sessionId: data.session_id,
-        schema,
-        domain,
-      });
+      setSessionIdentity(data.session_id, data.conversation_id);
+      upsertConversation(data.conversation);
       setSchemaStatus({ text: '✅ Schema Loaded', className: 'status success' });
+      await refreshSession();
     } catch (err) {
       alert(err.message);
       setSchemaStatus({ text: 'No schema loaded.', className: 'status error' });
@@ -119,28 +135,129 @@ export default function QueryCrafter() {
     }
   };
 
-  const newSession = async () => {
-  if (session.sessionId) {
-    await fetch(`/reset/${session.sessionId}`, { method: 'POST' });
-  }
+  const newConversation = async () => {
+    if (!sessionId) {
+      alert('Load schema first.');
+      return;
+    }
 
-  clearSession();
-  clearChatMessages();
-  setSchemaStatus({ text: 'No schema loaded.', className: 'status' });
-};
-
-  // ------------------------------------------------------------
-  // API Configurations Handling
-  // ------------------------------------------------------------
-  const loadApiConfigs = async () => {
     try {
-      const response = await fetch('/api-configs');
+      const response = await fetch(`/sessions/${sessionId}/conversations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clone_from_active: true,
+          schema: schemaDraft,
+          domain: domainDraft,
+        }),
+      });
       const data = await response.json();
-      setApiConfigs(data.configs || []);
-    } catch (err) {
-      console.error('Failed to fetch API configs:', err);
+
+      if (!data.success) {
+        alert(data.error || 'Unable to create conversation.');
+        return;
+      }
+
+      const conversation = data.conversation;
+      upsertConversation(conversation);
+      setSessionIdentity(sessionId, conversation.id);
+      replaceConversationMessages(conversation.id, []);
+      await refreshSession();
+      setSchemaStatus({ text: '✅ New conversation created', className: 'status success' });
+    } catch (error) {
+      alert(error.message);
     }
   };
+
+  const handleSelectConversation = async (conversationId) => {
+    await selectConversation(conversationId);
+    const selected = conversations.find((item) => item.id === conversationId);
+    if (selected) {
+      setSchemaDraft(selected.schema || '');
+      setDomainDraft(selected.domain || 'General');
+    }
+  };
+
+  const handleRenameConversation = async (conversation, nextTitleInput) => {
+    const nextTitle = (nextTitleInput || '').trim();
+    if (!nextTitle || !sessionId) return;
+
+    try {
+      const response = await fetch(`/sessions/${sessionId}/conversations/${conversation.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: nextTitle,
+          schema: conversation.schema,
+          domain: conversation.domain,
+        }),
+      });
+      const data = await response.json();
+      if (!data.success) {
+        alert(data.error || 'Unable to rename conversation.');
+        return;
+      }
+      upsertConversation(data.conversation);
+      if (conversation.id === activeConversationId) {
+        setSchemaStatus({ text: `✅ Renamed to "${data.conversation.title}"`, className: 'status success' });
+      }
+      await refreshSession();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleDeleteConversation = async (conversation) => {
+    if (!sessionId) return;
+    if (!window.confirm(`Delete "${conversation.title}"?`)) return;
+
+    try {
+      const response = await fetch(`/sessions/${sessionId}/conversations/${conversation.id}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (!data.success) {
+        alert(data.error || 'Unable to delete conversation.');
+        return;
+      }
+
+      await refreshSession();
+      const latestSessionResponse = await fetch(`/sessions/${sessionId}`);
+      const latestSessionData = await latestSessionResponse.json();
+      if (latestSessionResponse.ok && latestSessionData.success) {
+        const nextActiveId = latestSessionData.session?.last_active_conversation_id;
+        if (nextActiveId) {
+          await loadConversationMessages(nextActiveId);
+        } else {
+          clearChatMessages();
+        }
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const getAuthData = () => {
+    if (!formFields.authRequired) {
+      return { required: false, type: 'none' };
+    }
+    const type = formFields.authType;
+    if (type === 'bearer') return { required: true, type, token: formFields.authToken };
+    if (type === 'api_key') return { required: true, type, key_name: formFields.authKeyName, key_value: formFields.authKeyValue };
+    if (type === 'basic') return { required: true, type, username: formFields.authUsername, password: formFields.authPassword };
+    return { required: true, type: 'none' };
+  };
+
+  const getApiFormData = () => ({
+    id: activeApiConfigId,
+    name: formFields.name.trim(),
+    endpoint: formFields.endpoint.trim(),
+    method: formFields.method,
+    headers: formFields.headers.trim(),
+    body_template: formFields.bodyTemplate.trim(),
+    response_format: formFields.responseFormat,
+    auth: getAuthData(),
+  });
 
   const showApiConfigForm = () => {
     setActiveApiConfigId(null);
@@ -157,7 +274,7 @@ export default function QueryCrafter() {
       authKeyName: '',
       authKeyValue: '',
       authUsername: '',
-      authPassword: ''
+      authPassword: '',
     });
     setShowApiForm(true);
   };
@@ -165,30 +282,6 @@ export default function QueryCrafter() {
   const cancelApiConfigForm = () => {
     setShowApiForm(false);
     setActiveApiConfigId(null);
-  };
-
-  const getAuthData = () => {
-    if (!formFields.authRequired) {
-      return { required: false, type: 'none' };
-    }
-    const type = formFields.authType;
-    if (type === 'bearer') return { required: true, type, token: formFields.authToken };
-    if (type === 'api_key') return { required: true, type, key_name: formFields.authKeyName, key_value: formFields.authKeyValue };
-    if (type === 'basic') return { required: true, type, username: formFields.authUsername, password: formFields.authPassword };
-    return { required: true, type: 'none' };
-  };
-
-  const getApiFormData = () => {
-    return {
-      id: activeApiConfigId,
-      name: formFields.name.trim(),
-      endpoint: formFields.endpoint.trim(),
-      method: formFields.method,
-      headers: formFields.headers.trim(),
-      body_template: formFields.bodyTemplate.trim(),
-      response_format: formFields.responseFormat,
-      auth: getAuthData()
-    };
   };
 
   const saveApiConfig = async () => {
@@ -205,7 +298,7 @@ export default function QueryCrafter() {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
 
@@ -234,13 +327,13 @@ export default function QueryCrafter() {
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
 
       setApiImportStatus({
         text: data.success ? '✅ API connection validated.' : `❌ ${data.error}`,
-        className: data.success ? 'status success' : 'status error'
+        className: data.success ? 'status success' : 'status error',
       });
     } catch (err) {
       setApiImportStatus({ text: `❌ ${err.message}`, className: 'status error' });
@@ -265,7 +358,7 @@ export default function QueryCrafter() {
       authKeyName: auth.key_name || '',
       authKeyValue: auth.key_value || '',
       authUsername: auth.username || '',
-      authPassword: auth.password || ''
+      authPassword: auth.password || '',
     });
     setShowApiForm(true);
   };
@@ -283,7 +376,7 @@ export default function QueryCrafter() {
   };
 
   const previewApiConfig = async (id) => {
-    const query = prompt('Enter a SQL-like query to preview the API response', 'SELECT *');
+    const query = window.prompt('Enter a SQL-like query to preview the API response', 'SELECT *');
     if (!query) return;
 
     setApiPreview({ visible: true, format: '', data: null, error: 'Loading preview...', viewMode: 'table' });
@@ -292,7 +385,7 @@ export default function QueryCrafter() {
       const response = await fetch(`/api-configs/${id}/preview`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
+        body: JSON.stringify({ query }),
       });
       const data = await response.json();
 
@@ -300,15 +393,12 @@ export default function QueryCrafter() {
         setApiPreview({ visible: true, format: '', data: null, error: data.error || 'Preview failed', viewMode: 'table' });
         return;
       }
-      setApiPreview({ visible: true, format: data.format || 'unknown', data: data, error: '', viewMode: 'table' });
+      setApiPreview({ visible: true, format: data.format || 'unknown', data, error: '', viewMode: 'table' });
     } catch (err) {
       setApiPreview({ visible: true, format: '', data: null, error: err.message, viewMode: 'table' });
     }
   };
 
-  // ------------------------------------------------------------
-  // Inline Bubble Preview (Handles inside individual generated message)
-  // ------------------------------------------------------------
   const previewSqlWithApi = async (sql, index) => {
     if (!sql) return;
 
@@ -324,7 +414,7 @@ export default function QueryCrafter() {
       const response = await fetch(`/api-configs/${config.id}/preview`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: sql })
+        body: JSON.stringify({ query: sql }),
       });
       const data = await response.json();
 
@@ -336,7 +426,7 @@ export default function QueryCrafter() {
           previewLoading: false,
           previewFormat: data.format || 'unknown',
           previewData: data,
-          viewMode: 'table'
+          viewMode: 'table',
         });
       }
     } catch (err) {
@@ -348,9 +438,6 @@ export default function QueryCrafter() {
     updateChatMessage(index, { ...chatMessages[index], viewMode: mode });
   };
 
-  // ------------------------------------------------------------
-  // Chat Conversation Mechanics
-  // ------------------------------------------------------------
   const sendQuestion = async () => {
     if (!session.sessionId) {
       alert('Load schema first.');
@@ -367,7 +454,11 @@ export default function QueryCrafter() {
       const response = await fetch('/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: sessionId, question: currentQuestion })
+        body: JSON.stringify({
+          session_id: session.sessionId,
+          conversation_id: session.activeConversationId,
+          question: currentQuestion,
+        }),
       });
       const data = await response.json();
 
@@ -376,11 +467,24 @@ export default function QueryCrafter() {
           type: 'assistant',
           sql: data.assistant.sql_query,
           reasoning: data.assistant.reasoning,
-          attempts: data.attempts_used
+          attempts: data.attempts_used,
         });
+        if (session.conversations.find((item) => item.id === session.activeConversationId)?.title === 'New chat') {
+          const updatedTitle = currentQuestion.slice(0, 48);
+          await fetch(`/sessions/${session.sessionId}/conversations/${session.activeConversationId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: updatedTitle,
+              schema,
+              domain,
+            }),
+          });
+        }
       } else {
         appendChatMessage({ type: 'assistant', sql: 'ERROR', reasoning: data.error, attempts: 0 });
       }
+      await refreshSession();
     } catch (err) {
       appendChatMessage({ type: 'assistant', sql: 'Network Error', reasoning: err.message, attempts: 0 });
     } finally {
@@ -396,45 +500,65 @@ export default function QueryCrafter() {
   };
 
   const resetConversation = async () => {
-    if (sessionId === null) return;
+    if (!session.sessionId) return;
     try {
-      await fetch(`/reset/${sessionId}`, { method: 'POST' });
-      setChatMessages([]);
+      await fetch(`/reset/${session.sessionId}`, { method: 'POST' });
+      clearChatMessages();
     } catch (err) {
       console.error(err);
     }
   };
 
-  return (
-    <div className="container">
-      <h1>🛠 QueryCrafter</h1>
-      <div className="subtitle">Conversational SQL Assistant powered by Ollama</div>
+  const handleEditMessage = (index, updatedMessage) => {
+    updateChatMessage(index, updatedMessage);
+  };
 
-      <div id="mainLayout" className={`layout ${sessionId ? 'session-active' : ''}`}>
-        {/* Left Control Panel */}
-        <div className="left-panel">
-          <div className="card">
+  const handleRevertMessage = (index, updatedMessage) => {
+    updateChatMessage(index, updatedMessage);
+  };
+
+  return (
+    <div className="app-shell">
+      <ConversationSidebar
+        conversations={conversations}
+        activeConversationId={activeConversationId}
+        onNewConversation={newConversation}
+        onSelectConversation={handleSelectConversation}
+        onRenameConversation={handleRenameConversation}
+        onDeleteConversation={handleDeleteConversation}
+      />
+
+      <main className="workspace">
+        <section className="workspace-grid">
+          <div className="card schema-card">
+            <div className="card-header">
+              <div>
+                <div className="sidebar-kicker">Schema</div>
+                <h2>Current conversation</h2>
+              </div>
+              <button type="button" onClick={newConversation} disabled={!session.sessionId}>
+                New Chat
+              </button>
+            </div>
+
             <label>Database Schema (DDL)</label>
             <textarea
               id="schema"
               placeholder="Paste CREATE TABLE statements here..."
-              value={schema}
-              onChange={(e) => updateSession({ schema: e.target.value })}
-              disabled={sessionId !== null}
+              value={schemaDraft}
+              onChange={(e) => setSchemaDraft(e.target.value)}
             />
 
             <label>Domain</label>
-            <input
-              value={domain}
-              onChange={(e) => updateSession({ domain: e.target.value })}
-              disabled={sessionId !== null}
-            />
+            <input value={domainDraft} onChange={(e) => setDomainDraft(e.target.value)} />
 
             <div className="controls">
-              <button onClick={loadSchema} disabled={isSchemaLoading || sessionId !== null}>
-                {sessionId !== null ? 'Loaded' : isSchemaLoading ? 'Loading...' : 'Load Schema'}
+              <button onClick={loadSchema} disabled={isSchemaLoading}>
+                {isSchemaLoading ? 'Loading...' : session.sessionId ? 'Save Schema' : 'Load Schema'}
               </button>
-              <button onClick={newSession}>New Session</button>
+              <button onClick={resetConversation} disabled={!session.sessionId}>
+                Reset Conversation
+              </button>
             </div>
 
             <div id="schemaStatus" className={schemaStatus.className}>
@@ -442,10 +566,12 @@ export default function QueryCrafter() {
             </div>
           </div>
 
-          {/* API Config Component */}
-          <div className="card">
-            <h3>API Connection Configurations</h3>
-            <div className="controls" style={{ marginTop: '10px' }}>
+          <div className="card api-card">
+            <div className="card-header">
+              <div>
+                <div className="sidebar-kicker">API</div>
+                <h2>Connections</h2>
+              </div>
               <button type="button" onClick={showApiConfigForm}>
                 New API Config
               </button>
@@ -475,15 +601,19 @@ export default function QueryCrafter() {
                     <button
                       type="button"
                       className={apiPreview.viewMode === 'table' ? 'active' : ''}
-                      onClick={() => setApiPreview(prev => ({ ...prev, viewMode: 'table' }))}
+                      onClick={() => setApiPreview((prev) => ({ ...prev, viewMode: 'table' }))}
                       style={{ marginRight: '4px', padding: '2px 8px', fontSize: '12px' }}
-                    >Table</button>
+                    >
+                      Table
+                    </button>
                     <button
                       type="button"
                       className={apiPreview.viewMode === 'json' ? 'active' : ''}
-                      onClick={() => setApiPreview(prev => ({ ...prev, viewMode: 'json' }))}
+                      onClick={() => setApiPreview((prev) => ({ ...prev, viewMode: 'json' }))}
                       style={{ padding: '2px 8px', fontSize: '12px' }}
-                    >JSON</button>
+                    >
+                      JSON
+                    </button>
                   </div>
                 </div>
                 {apiPreview.error && <div className={apiPreview.error.includes('Loading') ? '' : 'error'}>{apiPreview.error}</div>}
@@ -503,41 +633,33 @@ export default function QueryCrafter() {
                           alert('No tabular data available to analyze.');
                         }
                       }}
-                    >📊 Open in Analytics</button>
+                    >
+                      📊 Open in Analytics
+                    </button>
                   </>
                 )}
               </div>
             )}
 
-            {apiImportStatus.text && (
-              <div id="apiImportStatus" className={apiImportStatus.className}>
-                {apiImportStatus.text}
-              </div>
-            )}
+            {apiImportStatus.text && <div id="apiImportStatus" className={apiImportStatus.className}>{apiImportStatus.text}</div>}
           </div>
-        </div>
 
-        {/* Right Chat History Panel */}
-        <ChatPanel
-          chatMessages={chatMessages}
-          isChatLoading={isChatLoading}
-          question={question}
-          setQuestion={setQuestion}
-          handleKeyPress={handleKeyPress}
-          sendQuestion={sendQuestion}
-          previewSqlWithApi={previewSqlWithApi}
-          setInlineViewMode={setInlineViewMode}
-          onOpenAnalytics={(previewData) => {
-            const rows = extractRowsForAnalytics(previewData);
-            if (rows && rows.length > 0) {
-              setAnalyticsData(rows);
-              navigate('/dashboard/analytics/regression');
-            } else {
-              alert('No tabular data available to analyze.');
-            }
-          }}
+          <ChatPanel
+            chatMessages={chatMessages}
+            isChatLoading={isChatLoading}
+            question={question}
+            setQuestion={setQuestion}
+            handleKeyPress={handleKeyPress}
+            sendQuestion={sendQuestion}
+            previewSqlWithApi={previewSqlWithApi}
+            setInlineViewMode={setInlineViewMode}
+          onResetConversation={resetConversation}
+          onEditMessage={handleEditMessage}
+          onRevertMessage={handleRevertMessage}
+          chatBoxRef={chatBoxRef}
         />
-      </div>
-    </div>
+      </section>
+    </main>
+  </div>
   );
 }

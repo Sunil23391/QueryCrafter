@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      '/sessions': 'http://localhost:5000',
+      '/messages': 'http://localhost:5000',
+      '/session': 'http://localhost:5000',
       '/schema': 'http://localhost:5000',
       '/chat': 'http://localhost:5000',
       '/reset': 'http://localhost:5000',
