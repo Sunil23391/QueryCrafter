@@ -9,7 +9,8 @@ export default defineConfig({
       '/schema': 'http://localhost:5000',
       '/chat': 'http://localhost:5000',
       '/reset': 'http://localhost:5000',
-      '/api-configs': 'http://localhost:5000'
+      '/api-configs': 'http://localhost:5000',
+      '/api/analytics/regression': 'http://localhost:5000'
     }
   }
 })
