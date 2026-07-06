@@ -37,6 +37,7 @@ class Conversation(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False, default="New chat")
     schema: Mapped[str] = mapped_column(Text, nullable=False, default="")
     domain: Mapped[str] = mapped_column(String(255), nullable=False, default="General")
+    api_config_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
     last_message_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)

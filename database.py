@@ -2,7 +2,7 @@ import os
 from contextlib import contextmanager
 from pathlib import Path
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
 
 
@@ -32,6 +32,14 @@ def init_db():
     from models import Base as ModelsBase  # noqa: WPS433
 
     ModelsBase.metadata.create_all(bind=engine)
+
+    inspector = inspect(engine)
+    if "conversations" in inspector.get_table_names():
+        columns = {column["name"] for column in inspector.get_columns("conversations")}
+        if "api_config_id" not in columns:
+            with engine.begin() as connection:
+                connection.execute(text("ALTER TABLE conversations ADD COLUMN api_config_id VARCHAR(36)"))
+                connection.execute(text("CREATE INDEX IF NOT EXISTS idx_conversations_api_config_id ON conversations(api_config_id)"))
 
 
 @contextmanager

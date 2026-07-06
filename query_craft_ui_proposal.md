@@ -93,3 +93,25 @@ Depending on *why* these cards need to be visible, here are three elegant UX pat
 ---
 
 Would you prefer this technical panel to slide out from the right side as a drawer, or would an accordion-style dropdown directly inside the chat bubbles work better for your workflow?
+
+=================================
+I am working on a project called QueryCrafter, and I'm having an issue with the workflow sequence when creating a new conversation. 
+
+### The Core Issue:
+The app is not properly handling the sequence required for a brand-new chat session. When a user clicks "New Chat", the system fails to correctly execute the initialization pipeline. 
+
+### The Required 3-Step Workflow:
+Every time a new chat is initialized, it must strictly follow this lifecycle:
+1. **Step 1 (Create Chat):** Create a brand-new chat instance/conversation ID in the state.
+2. **Step 2 (Attach DDL Schema):** Open or trigger the schema input/selection specifically *for this new chat conversation*.
+3. **Step 3 (Configure API):** Bind the API configuration context to this specific new chat session.
+
+Currently, it is breaking or skipping steps, making it difficult to link the schema and API configuration to the newly created chat.
+
+
+### Your Task:
+1. Analyze why the workflow is breaking after creating a chat and why it isn't seamlessly moving to the DDL schema and API config assignment steps for that specific chat ID.
+2. Refactor the code or state logic to ensure that creating a new chat automatically initializes the state container for its schema and API config, guiding the user or the state pipeline through Steps 1, 2, and 3 seamlessly.
+3. Provide the exact code changes needed.
+
+======================

@@ -41,6 +41,7 @@ def conversation_summary(conversation: Conversation):
         "title": conversation.title,
         "schema": conversation.schema,
         "domain": conversation.domain,
+        "api_config_id": conversation.api_config_id,
         "created_at": conversation.created_at.isoformat(),
         "updated_at": conversation.updated_at.isoformat(),
         "last_message_time": conversation.last_message_time.isoformat() if conversation.last_message_time else None,
@@ -109,17 +110,20 @@ def create_conversation(
     title: str | None = None,
     schema: str = "",
     domain: str = "General",
+    api_config_id: str | None = None,
     clone_from: Conversation | None = None,
 ):
     session = ensure_session(db, session_id)
     base_schema = clone_from.schema if clone_from else schema
     base_domain = clone_from.domain if clone_from else domain
+    base_api_config_id = clone_from.api_config_id if clone_from else api_config_id
     conversation = Conversation(
         id=str(uuid.uuid4()),
         session_id=session.id,
         title=(title or "").strip() or _generate_title(base_schema, base_domain),
         schema=base_schema or "",
         domain=(base_domain or "General").strip() or "General",
+        api_config_id=base_api_config_id,
     )
     db.add(conversation)
     db.flush()
@@ -139,6 +143,8 @@ def update_conversation(db, session_id: str, conversation_id: str, **changes):
         conversation.schema = changes["schema"]
     if "domain" in changes and changes["domain"] is not None:
         conversation.domain = changes["domain"].strip() or conversation.domain
+    if "api_config_id" in changes:
+        conversation.api_config_id = changes["api_config_id"] or None
     if "last_message_time" in changes and changes["last_message_time"] is not None:
         conversation.last_message_time = changes["last_message_time"]
 

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { ensureConversationWorkspace, upsertConversationWorkspace } from './conversationWorkflow';
 
 const SessionContext = createContext(null);
 
@@ -9,6 +10,7 @@ const createEmptyState = () => ({
   activeConversationId: null,
   conversations: [],
   messagesByConversationId: {},
+  conversationWorkspacesById: {},
   hydrated: false,
 });
 
@@ -62,8 +64,10 @@ export function SessionProvider({ children }) {
     activeConversationId: state.activeConversationId,
     schema: activeConversation?.schema || '',
     domain: activeConversation?.domain || 'General',
+    apiConfigId: activeConversation?.api_config_id || null,
     chatMessages: activeMessages,
     conversations: state.conversations,
+    conversationWorkspacesById: state.conversationWorkspacesById,
   };
 
   useEffect(() => {
@@ -109,6 +113,10 @@ export function SessionProvider({ children }) {
           activeConversationId,
           conversations,
           messagesByConversationId: {},
+          conversationWorkspacesById: conversations.reduce(
+            (acc, conversation) => upsertConversationWorkspace(acc, conversation),
+            {},
+          ),
           hydrated: true,
         };
 
@@ -146,6 +154,10 @@ export function SessionProvider({ children }) {
     setState((prev) => ({
       ...prev,
       conversations: sortByUpdatedAt(conversations),
+      conversationWorkspacesById: conversations.reduce(
+        (acc, conversation) => upsertConversationWorkspace(acc, conversation),
+        prev.conversationWorkspacesById,
+      ),
       activeConversationId: activeConversationId ?? prev.activeConversationId,
     }));
   };
@@ -154,6 +166,14 @@ export function SessionProvider({ children }) {
     setState((prev) => ({
       ...prev,
       conversations: sortByUpdatedAt(mergeConversation(prev.conversations, conversation)),
+      conversationWorkspacesById: upsertConversationWorkspace(prev.conversationWorkspacesById, conversation),
+    }));
+  };
+
+  const ensureConversationWorkspaceForId = (conversationId) => {
+    setState((prev) => ({
+      ...prev,
+      conversationWorkspacesById: ensureConversationWorkspace(prev.conversationWorkspacesById, conversationId),
     }));
   };
 
@@ -274,13 +294,17 @@ export function SessionProvider({ children }) {
     if (!response.ok || !data.success) return;
 
     const serverSession = data.session || {};
-    setState((prev) => ({
-      ...prev,
-      sessionId: serverSession.id || prev.sessionId,
-      activeConversationId: serverSession.last_active_conversation_id || prev.activeConversationId,
-      conversations: sortByUpdatedAt(serverSession.conversations || prev.conversations),
-    }));
-  };
+      setState((prev) => ({
+        ...prev,
+        sessionId: serverSession.id || prev.sessionId,
+        activeConversationId: serverSession.last_active_conversation_id || prev.activeConversationId,
+        conversations: sortByUpdatedAt(serverSession.conversations || prev.conversations),
+        conversationWorkspacesById: (serverSession.conversations || prev.conversations).reduce(
+          (acc, conversation) => upsertConversationWorkspace(acc, conversation),
+          prev.conversationWorkspacesById,
+        ),
+      }));
+    };
 
   const value = {
     state,
@@ -290,6 +314,7 @@ export function SessionProvider({ children }) {
     setSessionIdentity,
     setConversations,
     upsertConversation,
+    ensureConversationWorkspaceForId,
     replaceConversationMessages,
     appendChatMessage,
     updateChatMessage,

@@ -164,6 +164,7 @@ def create_session_conversation(session_id):
     title = data.get("title")
     schema = data.get("schema", "")
     domain = data.get("domain", "General")
+    api_config_id = data.get("api_config_id")
 
     with get_db() as db:
         session = ensure_session(db, session_id)
@@ -177,6 +178,7 @@ def create_session_conversation(session_id):
             title=title,
             schema=schema,
             domain=domain,
+            api_config_id=api_config_id,
             clone_from=clone_from,
         )
         return jsonify({"success": True, "conversation": conversation_summary(conversation)})
@@ -206,6 +208,7 @@ def patch_session_conversation(session_id, conversation_id):
             title=data.get("title", conversation.title),
             schema=data.get("schema", conversation.schema),
             domain=data.get("domain", conversation.domain),
+            api_config_id=data.get("api_config_id", conversation.api_config_id),
         )
         return jsonify({"success": True, "conversation": conversation_summary(updated)})
 

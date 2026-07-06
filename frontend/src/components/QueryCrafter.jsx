@@ -9,13 +9,18 @@ import DataRenderer from './DataRenderer';
 import { useAnalyticsData } from './analytics/AnalyticsContext';
 import { extractRowsForAnalytics } from '../utils/analytics';
 import { useSession } from '../context/SessionContext';
+import { resolveConversationTarget } from '../context/conversationWorkflow';
+
+const createClientSessionId = () =>
+  (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function'
+    ? globalThis.crypto.randomUUID()
+    : `${Date.now()}-${Math.random()}`);
 
 export default function QueryCrafter() {
   const navigate = useNavigate();
   const { setData: setAnalyticsData } = useAnalyticsData();
   const {
     session,
-    sessionId,
     appendChatMessage,
     updateChatMessage,
     clearChatMessages,
@@ -25,6 +30,7 @@ export default function QueryCrafter() {
     selectConversation,
     loadConversationMessages,
     refreshSession,
+    ensureConversationWorkspaceForId,
   } = useSession();
 
   const [isSchemaLoading, setIsSchemaLoading] = useState(false);
@@ -53,14 +59,19 @@ export default function QueryCrafter() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [schemaDraft, setSchemaDraft] = useState('');
   const [domainDraft, setDomainDraft] = useState('General');
+  const [selectedApiConfigId, setSelectedApiConfigId] = useState('');
+  const [workflowStage, setWorkflowStage] = useState('schema');
   const [showTechPanel, setShowTechPanel] = useState(false);
+  const [workingConversationId, setWorkingConversationId] = useState(null);
   const chatBoxRef = useRef(null);
 
   const schema = session.schema;
   const domain = session.domain;
+  const apiConfigId = session.apiConfigId;
   const chatMessages = session.chatMessages;
   const conversations = session.conversations || [];
   const activeConversationId = session.activeConversationId;
+  const currentConversationId = resolveConversationTarget(workingConversationId, activeConversationId);
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -71,7 +82,11 @@ export default function QueryCrafter() {
   useEffect(() => {
     setSchemaDraft(schema || '');
     setDomainDraft(domain || 'General');
-  }, [schema, domain, activeConversationId]);
+    setSelectedApiConfigId(apiConfigId || '');
+    const hasSchema = Boolean((schema || '').trim());
+    const hasApi = Boolean(apiConfigId);
+    setWorkflowStage(hasSchema ? (hasApi ? 'ready' : 'api') : 'schema');
+  }, [schema, domain, apiConfigId, activeConversationId]);
 
   useEffect(() => {
     loadApiConfigs();
@@ -109,8 +124,8 @@ export default function QueryCrafter() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          session_id: sessionId,
-          conversation_id: activeConversationId,
+          session_id: session.sessionId,
+          conversation_id: currentConversationId,
           schema: schemaDraft,
           domain: domainDraft,
         }),
@@ -124,7 +139,11 @@ export default function QueryCrafter() {
       }
 
       setSessionIdentity(data.session_id, data.conversation_id);
+      setWorkingConversationId(data.conversation_id);
       upsertConversation(data.conversation);
+      ensureConversationWorkspaceForId(data.conversation_id);
+      setWorkflowStage('api');
+      setShowTechPanel(true);
       setSchemaStatus({ text: '✅ Schema Loaded', className: 'status success' });
       await refreshSession();
     } catch (err) {
@@ -136,19 +155,19 @@ export default function QueryCrafter() {
   };
 
   const newConversation = async () => {
-    if (!sessionId) {
-      alert('Load schema first.');
-      return;
+    const nextSessionId = session.sessionId || createClientSessionId();
+    if (!session.sessionId) {
+      setSessionIdentity(nextSessionId, null);
     }
 
     try {
-      const response = await fetch(`/sessions/${sessionId}/conversations`, {
+      const response = await fetch(`/sessions/${nextSessionId}/conversations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          clone_from_active: true,
-          schema: schemaDraft,
-          domain: domainDraft,
+          clone_from_active: false,
+          schema: '',
+          domain: 'General',
         }),
       });
       const data = await response.json();
@@ -160,8 +179,15 @@ export default function QueryCrafter() {
 
       const conversation = data.conversation;
       upsertConversation(conversation);
-      setSessionIdentity(sessionId, conversation.id);
+      ensureConversationWorkspaceForId(conversation.id);
+      setSessionIdentity(nextSessionId, conversation.id);
+      setWorkingConversationId(conversation.id);
       replaceConversationMessages(conversation.id, []);
+      setSchemaDraft('');
+      setDomainDraft('General');
+      setSelectedApiConfigId('');
+      setWorkflowStage('schema');
+      setShowTechPanel(true);
       await refreshSession();
       setSchemaStatus({ text: '✅ New conversation created', className: 'status success' });
     } catch (error) {
@@ -171,25 +197,33 @@ export default function QueryCrafter() {
 
   const handleSelectConversation = async (conversationId) => {
     await selectConversation(conversationId);
+    setWorkingConversationId(conversationId);
     const selected = conversations.find((item) => item.id === conversationId);
     if (selected) {
       setSchemaDraft(selected.schema || '');
       setDomainDraft(selected.domain || 'General');
+      setSelectedApiConfigId(selected.api_config_id || '');
+      const hasSchema = Boolean((selected.schema || '').trim());
+      const hasApi = Boolean(selected.api_config_id);
+      const nextStage = hasSchema ? (hasApi ? 'ready' : 'api') : 'schema';
+      setWorkflowStage(nextStage);
+      setShowTechPanel(nextStage !== 'ready');
     }
   };
 
   const handleRenameConversation = async (conversation, nextTitleInput) => {
     const nextTitle = (nextTitleInput || '').trim();
-    if (!nextTitle || !sessionId) return;
+    if (!nextTitle || !session.sessionId) return;
 
     try {
-      const response = await fetch(`/sessions/${sessionId}/conversations/${conversation.id}`, {
+      const response = await fetch(`/sessions/${session.sessionId}/conversations/${conversation.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: nextTitle,
           schema: conversation.schema,
           domain: conversation.domain,
+          api_config_id: conversation.api_config_id || null,
         }),
       });
       const data = await response.json();
@@ -207,12 +241,51 @@ export default function QueryCrafter() {
     }
   };
 
+  const bindApiConfigToConversation = async (apiConfigIdValue) => {
+    const targetConversationId = resolveConversationTarget(workingConversationId, activeConversationId);
+    if (!session.sessionId || !targetConversationId) {
+      alert('Create a conversation first.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/sessions/${session.sessionId}/conversations/${targetConversationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: conversations.find((item) => item.id === targetConversationId)?.title || 'New chat',
+          schema,
+          domain,
+          api_config_id: apiConfigIdValue || null,
+        }),
+      });
+      const data = await response.json();
+      if (!data.success) {
+        alert(data.error || 'Unable to bind API configuration.');
+        return;
+      }
+
+      upsertConversation(data.conversation);
+      ensureConversationWorkspaceForId(data.conversation.id);
+      setSelectedApiConfigId(apiConfigIdValue || '');
+      setWorkflowStage(apiConfigIdValue ? 'ready' : 'api');
+      setShowTechPanel(!apiConfigIdValue ? true : false);
+      setWorkingConversationId(targetConversationId);
+      await refreshSession();
+      if (apiConfigIdValue) {
+        setSchemaStatus({ text: '✅ API bound to this conversation', className: 'status success' });
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   const handleDeleteConversation = async (conversation) => {
-    if (!sessionId) return;
+    if (!session.sessionId) return;
     if (!window.confirm(`Delete "${conversation.title}"?`)) return;
 
     try {
-      const response = await fetch(`/sessions/${sessionId}/conversations/${conversation.id}`, {
+      const response = await fetch(`/sessions/${session.sessionId}/conversations/${conversation.id}`, {
         method: 'DELETE',
       });
       const data = await response.json();
@@ -222,7 +295,7 @@ export default function QueryCrafter() {
       }
 
       await refreshSession();
-      const latestSessionResponse = await fetch(`/sessions/${sessionId}`);
+      const latestSessionResponse = await fetch(`/sessions/${session.sessionId}`);
       const latestSessionData = await latestSessionResponse.json();
       if (latestSessionResponse.ok && latestSessionData.success) {
         const nextActiveId = latestSessionData.session?.last_active_conversation_id;
@@ -406,9 +479,11 @@ export default function QueryCrafter() {
   const previewSqlWithApi = async (sql, index) => {
     if (!sql) return;
 
-    const config = apiConfigs[0];
+    const config = apiConfigs.find((item) => item.id === selectedApiConfigId);
     if (!config) {
-      setApiImportStatus({ text: '⚠️ Create an API configuration first.', className: 'status error' });
+      setApiImportStatus({ text: '⚠️ Bind an API configuration to this conversation first.', className: 'status error' });
+      setShowTechPanel(true);
+      setWorkflowStage('api');
       return;
     }
 
@@ -447,6 +522,18 @@ export default function QueryCrafter() {
       alert('Load schema first.');
       return;
     }
+    if (!schemaDraft.trim()) {
+      setShowTechPanel(true);
+      setWorkflowStage('schema');
+      alert('Attach the DDL schema for this conversation first.');
+      return;
+    }
+    if (!selectedApiConfigId) {
+      setShowTechPanel(true);
+      setWorkflowStage('api');
+      alert('Bind an API configuration to this conversation before continuing.');
+      return;
+    }
     if (!question.trim()) return;
 
     const currentQuestion = question.trim();
@@ -460,7 +547,7 @@ export default function QueryCrafter() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           session_id: session.sessionId,
-          conversation_id: session.activeConversationId,
+          conversation_id: currentConversationId,
           question: currentQuestion,
         }),
       });
@@ -473,15 +560,16 @@ export default function QueryCrafter() {
           reasoning: data.assistant.reasoning,
           attempts: data.attempts_used,
         });
-        if (session.conversations.find((item) => item.id === session.activeConversationId)?.title === 'New chat') {
+        if (session.conversations.find((item) => item.id === currentConversationId)?.title === 'New chat') {
           const updatedTitle = currentQuestion.slice(0, 48);
-          await fetch(`/sessions/${session.sessionId}/conversations/${session.activeConversationId}`, {
+          await fetch(`/sessions/${session.sessionId}/conversations/${currentConversationId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               title: updatedTitle,
               schema,
               domain,
+              api_config_id: selectedApiConfigId || null,
             }),
           });
         }
@@ -508,6 +596,7 @@ export default function QueryCrafter() {
     try {
       await fetch(`/reset/${session.sessionId}`, { method: 'POST' });
       clearChatMessages();
+      setWorkingConversationId(activeConversationId);
     } catch (err) {
       console.error(err);
     }
@@ -537,6 +626,11 @@ export default function QueryCrafter() {
           <div>
             <div className="sidebar-kicker">Active conversation</div>
             <h1>{session.conversations.find((item) => item.id === activeConversationId)?.title || 'New chat'}</h1>
+            <div className="workflow-pill">
+              {workflowStage === 'schema' && 'Step 1 of 3: Create chat done. Attach the DDL schema.'}
+              {workflowStage === 'api' && 'Step 2 of 3 complete. Bind an API config to this conversation.'}
+              {workflowStage === 'ready' && 'Step 3 of 3 complete. This conversation is ready.'}
+            </div>
           </div>
           <button type="button" className="tech-toggle" onClick={toggleTechPanel}>
             {showTechPanel ? 'Close Tech' : 'View Tech'}
@@ -618,6 +712,19 @@ export default function QueryCrafter() {
                   New API Config
                 </button>
               </div>
+
+              <label>Bind API to this conversation</label>
+              <select
+                value={selectedApiConfigId}
+                onChange={(e) => bindApiConfigToConversation(e.target.value)}
+              >
+                <option value="">Select an API config</option>
+                {apiConfigs.map((config) => (
+                  <option key={config.id} value={config.id}>
+                    {config.name}
+                  </option>
+                ))}
+              </select>
 
               <ApiConfigForm
                 formFields={formFields}
