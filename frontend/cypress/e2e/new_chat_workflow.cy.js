@@ -1,11 +1,5 @@
 describe('QueryCrafter new chat workflow', () => {
   it('creates a new chat, attaches schema, binds API config, and executes a generated query', () => {
-    cy.visit('/', {
-      onBeforeLoad(win) {
-        win.localStorage.clear();
-      },
-    });
-
     const sessionIdHolder = { value: null };
     const conversationHolder = {
       value: null,
@@ -26,6 +20,12 @@ describe('QueryCrafter new chat workflow', () => {
       success: true,
       configs: [apiConfig],
     }).as('getApiConfigs');
+
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        win.localStorage.clear();
+      },
+    });
 
     cy.intercept('POST', /\/sessions\/[^/]+\/conversations$/, (req) => {
       const match = req.url.match(/\/sessions\/([^/]+)\/conversations$/);

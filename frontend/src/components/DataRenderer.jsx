@@ -53,6 +53,66 @@ function extractRows(payload) {
   return null;
 }
 
+function getCsvHeaders(rows) {
+  if (!Array.isArray(rows) || rows.length === 0) return ['Value'];
+
+  const headers = new Set();
+  rows.forEach((row) => {
+    if (row && typeof row === 'object' && !Array.isArray(row)) {
+      Object.keys(row).forEach((key) => headers.add(key));
+    }
+  });
+
+  return headers.size > 0 ? Array.from(headers) : ['Value'];
+}
+
+function sanitizeCsvValue(value) {
+  if (value === null || value === undefined) return '';
+
+  const normalizedValue =
+    typeof value === 'object' ? JSON.stringify(value) : String(value);
+  const escapedValue = normalizedValue.replace(/\r?\n/g, ' ').replace(/"/g, '""');
+
+  return /[",\n]/.test(escapedValue) ? `"${escapedValue}"` : escapedValue;
+}
+
+function buildCsvContent(rows) {
+  if (!Array.isArray(rows) || rows.length === 0) return '';
+
+  const headers = getCsvHeaders(rows);
+  const csvRows = [headers.join(',')];
+
+  rows.forEach((row) => {
+    const csvValues = headers.map((header) => {
+      const value = row && typeof row === 'object' && !Array.isArray(row)
+        ? row[header]
+        : row;
+      return sanitizeCsvValue(value);
+    });
+
+    csvRows.push(csvValues.join(','));
+  });
+
+  return csvRows.join('\n');
+}
+
+function downloadCsv(rows, filename = 'query-results.csv') {
+  if (!Array.isArray(rows) || rows.length === 0) return;
+
+  const csvContent = buildCsvContent(rows);
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = filename;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}
+
 export default function DataRenderer({ data, viewMode }) {
   const [xColumn, setXColumn] = useState('');
   const [yColumn, setYColumn] = useState('');
@@ -67,6 +127,7 @@ export default function DataRenderer({ data, viewMode }) {
     () => getNumericColumns(dataArray || []),
     [dataArray]
   );
+  const hasExportableData = Array.isArray(dataArray) && dataArray.length > 0;
 
   React.useEffect(() => {
     if (numericColumns.length > 0) {
@@ -173,6 +234,15 @@ export default function DataRenderer({ data, viewMode }) {
             disabled={isComputing || !xColumn || !yColumn}
           >
             {isComputing ? 'Computing…' : 'Compute Regression'}
+          </button>
+
+          <button
+            type="button"
+            className="button export-button"
+            onClick={() => downloadCsv(dataArray)}
+            disabled={!hasExportableData}
+          >
+            Export CSV
           </button>
         </div>
 

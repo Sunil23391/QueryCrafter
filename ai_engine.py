@@ -185,7 +185,7 @@ Return JSON only.
                 time.sleep(1.5 ** attempt)
 
             response = ollama.chat(
-                model="gemma4:e2b",
+                model="slm-sql:latest",
                 # model="smollm:latest",
                 messages=messages,
                 format="json",
@@ -208,7 +208,7 @@ Return JSON only.
             else:
                 arguments = parsed
 
-            sql = arguments.get("sql_query")
+            sql = arguments.get("sql_query") or arguments.get("sql")
 
             if not sql:
                 raise ValueError("sql_query missing")

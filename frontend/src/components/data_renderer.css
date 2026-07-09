@@ -48,6 +48,12 @@
   cursor: not-allowed;
 }
 
+.export-button {
+  margin-left: auto;
+  background: #0f766e;
+  border-color: #0f766e;
+}
+
 /* error */
 .error {
   color: #b91c1c;
